@@ -33,12 +33,12 @@ def get_password():
                 for sugerencia in resultado["sugerencias"]:
                     print(f"  * {sugerencia}") """
 
-import re
+""" import re
 def analizador_contrasena(contrasena):
-    """
+    ""
     :param contrasena: str, contraseña a analizar.
     :return: dict, resultado del analisis.
-    """
+    ""
     
     resultado={
         "longitud": False,
@@ -99,4 +99,4 @@ def analizador_contrasena(contrasena):
     elif len(resultado["sugerencias"]) <=2:
         resultado["fortaleza"]="Moderada"
         
-    return resultado
+    return resultado """
