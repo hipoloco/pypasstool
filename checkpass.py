@@ -1,5 +1,17 @@
 from getpass import getpass
+
+from modules import passutils
 from modules.utils import clear_screen, cprint
+
+passinfo = {
+    "lenght": 0,
+    "number": False,
+    "lowercase": False,
+    "uppercase": False,
+    "secsymbol": False,
+    "commsymbol": False,
+    "qwertysymbol": False,
+}
 
 def get_password():
     password = ""
@@ -11,8 +23,12 @@ def get_password():
             password = getpass("Ingerse la contraseña a analizar: ")
             if password == "":
                 getpass("\nNo ha ingresado una contraseña, presione ENTER para continuar.")
-            if " " in password:
+            elif " " in password:
                 getpass("\nLa contraseña no puede tener espacios, presione ENTER para continuar.")
+            elif not passutils.validate_password(password):
+                getpass("\nLa contraseña contiene caracteres inválidos, presione ENTER para continuar.")
+                password = ""
+
         repeat_pass = getpass("Ingerse nuevamente la contraseña: ")
         if password != repeat_pass:
             getpass("\nLas contraseñas no coinciden, presione ENTER para continuar.")
@@ -20,7 +36,17 @@ def get_password():
             repeat_pass = " "
 
     return password
-            
+
+def analyze_password(password):
+    passinfo["lenght"] = len(password)
+    passinfo["number"] = passutils.pass_has_chartype(password, passutils.NUMS)
+    passinfo["lowercase"] = passutils.pass_has_chartype(password, passutils.LOWER)
+    passinfo["uppercase"] = passutils.pass_has_chartype(password, passutils.UPPER)
+    passinfo["secsymbol"] = passutils.pass_has_chartype(password, passutils.SEC_SYMB)
+    passinfo["commsymbol"] = passutils.pass_has_chartype(password, passutils.COMM_SYMB)
+    passinfo["qwertysymbol"] = passutils.pass_has_chartype(password, passutils.QWERTY_SYMB)
+
+
 
 """         contrasena=input("Ingrese la contraseña para analizar: ")
             resultado=analizador_contrasena(contrasena)
