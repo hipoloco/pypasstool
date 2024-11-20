@@ -22,7 +22,7 @@ UPPER = set([
     "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
 ])
 
-ALLOWED_CHARS = set(QWERTY_SYMB + COMM_SYMB + SEC_SYMB + NUMS + LOWER + UPPER)
+ALLOWED_CHARS = (QWERTY_SYMB | COMM_SYMB | SEC_SYMB | NUMS | LOWER | UPPER)
 
 def pass_has_chartype(password, char_list):
     return any(char in char_list for char in password)
