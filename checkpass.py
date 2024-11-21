@@ -2,7 +2,7 @@ from getpass import getpass
 
 from modules import passutils
 from modules.utils import clear_screen, cprint, secs_to_time
-from modules.constants import DEFAULT_HASHCALC
+from modules.constants import DEFAULT_HASHCALC, COLOR_LIMIT_TIMES
 
 passinfo = {
     "length": 0,
@@ -12,6 +12,7 @@ passinfo = {
     "secsymbol": False,
     "commsymbol": False,
     "qwertysymbol": False,
+    "security": 0
 }
 
 def header():
@@ -69,15 +70,45 @@ def calc_passwords(pass_lenght):
 def bruteforce_time(num_passwords, hashrate):
     return num_passwords/hashrate
 
+def is_password_secure(pass_breaktime):
+    if 0 <= pass_breaktime <= COLOR_LIMIT_TIMES[0]:
+        passinfo["security"] = 0
+    elif COLOR_LIMIT_TIMES[0] < pass_breaktime <= COLOR_LIMIT_TIMES[1]:
+        passinfo["security"] = 1
+    elif COLOR_LIMIT_TIMES[1] < pass_breaktime <= COLOR_LIMIT_TIMES[2]:
+        passinfo["security"] = 2
+    elif COLOR_LIMIT_TIMES[2] < pass_breaktime <= COLOR_LIMIT_TIMES[3]:
+        passinfo["security"] = 3
+    else:
+        passinfo["security"] = 4
+
+def set_color_message():
+    if passinfo["security"] == 0:
+        return "M"
+    if passinfo["security"] == 1:
+        return "R"
+    if passinfo["security"] == 2:
+        return "Y"
+    if passinfo["security"] == 3:
+        return "C"
+    if passinfo["security"] == 4:
+        return "G"
+    else:
+        return "RST"
+
 def checkpass():
     password = get_password()
 
     analyze_password(password)
+
     num_passwords = calc_passwords(passinfo["length"])
     pass_breaktime = bruteforce_time(num_passwords, DEFAULT_HASHCALC)
     breaktime_text = secs_to_time(pass_breaktime)
+    is_password_secure(pass_breaktime)
+    breaktime_text_color = set_color_message()
 
-    print(f"Tiempo para romper la contraseña: {breaktime_text}")
+    print(f"Tiempo para romper la contraseña: ", end = "")
+    cprint(breaktime_text, breaktime_text_color)
     getpass("\nPresione ENTER para volver al menú principal.")
 
     
