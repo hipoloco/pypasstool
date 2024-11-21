@@ -1,11 +1,11 @@
-from modules.chars import *
+from modules.passutils import QWERTY_SYMB, COMM_SYMB, SEC_SYMB, NUMS, LOWER, UPPER
 from getpass import getpass
 from modules.utils import clear_screen, cprint
 import time
 
 def pass_gen(largo):
-    password = ""
-    allchars = qwerty_symbols + pass_common_symbols + pass_secure_symbols + numbers + lowercase_letters + uppercase_letters
+    contra = ""
+    allchars = list(QWERTY_SYMB) + list(COMM_SYMB) + list(SEC_SYMB) + list(NUMS) + list(LOWER) + list(UPPER)
 
     if largo <= 0:
         print("El largo de la contraseña debe ser mayor a 0")
@@ -14,9 +14,9 @@ def pass_gen(largo):
     for i in range(largo):
         seed = (seed * 9301 + 49297) % 233280
         index = seed % len(allchars)
-        password += allchars[index]
+        contra += allchars[index]
 
-    return password
+    return contra
 
 
 while True:
@@ -40,8 +40,8 @@ while True:
                 continue
 
             # Si el número es válido, genera la contraseña
-            password = pass_gen(largo)
-            print("\nSu contraseña es:", password)
+            contra = pass_gen(largo)
+            print("\nSu contraseña es:", contra)
             
             # Esperar que el usuario presione ENTER antes de limpiar la pantalla
             getpass("\nPresione ENTER para continuar")
