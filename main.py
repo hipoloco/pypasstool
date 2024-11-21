@@ -1,4 +1,4 @@
-import checkpass,passgenerator
+import checkpass, passgenerator
 
 from modules.utils import clear_screen, cprint
 from getpass import getpass
@@ -21,7 +21,7 @@ def menu():
         if opcion == "1":
             checkpass.checkpass()
         elif opcion == "2":
-            print("Ejecutar opción 2")
+            passgenerator.passgenerator()
         elif opcion == "3":
             print("Ejecutar opción 3")
         elif opcion == "4":
