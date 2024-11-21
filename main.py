@@ -1,4 +1,4 @@
-import checkpass
+import checkpass,passgenerator
 
 from modules.utils import clear_screen, cprint
 from getpass import getpass
