@@ -19,7 +19,7 @@ def menu():
         opcion = mostrar_menu()
 
         if opcion == "1":
-            checkpass.get_password()
+            checkpass.checkpass()
         elif opcion == "2":
             print("Ejecutar opción 2")
         elif opcion == "3":
