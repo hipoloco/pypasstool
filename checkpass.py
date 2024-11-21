@@ -13,10 +13,13 @@ passinfo = {
     "qwertysymbol": False,
 }
 
+def header():
+    clear_screen()
+    cprint("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS ===\n", "Y")
+
 def get_password():
     while True:
-        clear_screen()
-        cprint("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS ===\n", "Y")
+        header()
         password = getpass("Ingrese la contraseña a analizar: ")
 
         if not password:
@@ -60,7 +63,11 @@ def calc_passwords():
     if passinfo["qwertysymbol"]:
         charset += len(passutils.QWERTY_SYMB)
 
-    return charset ** passinfo["length"]
+    return charset**passinfo["length"]
+
+def bruteforce_time(num_passwords, hashrate):
+    return num_passwords/hashrate
+
 
 """         contrasena=input("Ingrese la contraseña para analizar: ")
             resultado=analizador_contrasena(contrasena)
