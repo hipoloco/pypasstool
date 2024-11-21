@@ -1,26 +1,73 @@
 from getpass import getpass
+
+from modules import passutils
 from modules.utils import clear_screen, cprint
 
+passinfo = {
+    "length": 0,
+    "number": False,
+    "lowercase": False,
+    "uppercase": False,
+    "secsymbol": False,
+    "commsymbol": False,
+    "qwertysymbol": False,
+}
+
+def header():
+    clear_screen()
+    cprint("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS ===\n", "Y")
+
 def get_password():
-    password = ""
-    repeat_pass = " "
-    while password != repeat_pass:
-        while password == "" or " " in password:
-            clear_screen()
-            cprint("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS ===\n", "Y")
-            password = getpass("Ingerse la contraseña a analizar: ")
-            if password == "":
-                getpass("\nNo ha ingresado una contraseña, presione ENTER para continuar.")
-            if " " in password:
-                getpass("\nLa contraseña no puede tener espacios, presione ENTER para continuar.")
-        repeat_pass = getpass("Ingerse nuevamente la contraseña: ")
+    while True:
+        header()
+        password = getpass("Ingrese la contraseña a analizar: ")
+
+        if not password:
+            getpass("\nNo ha ingresado una contraseña, presione ENTER para continuar.")
+            continue
+        if " " in password:
+            getpass("\nLa contraseña no puede tener espacios, presione ENTER para continuar.")
+            continue
+        if not passutils.validate_password(password):
+            getpass("\nLa contraseña contiene caracteres inválidos, presione ENTER para continuar.")
+            continue
+
+        repeat_pass = getpass("Ingrese nuevamente la contraseña: ")
         if password != repeat_pass:
             getpass("\nLas contraseñas no coinciden, presione ENTER para continuar.")
-            password = ""
-            repeat_pass = " "
+            continue
 
-    return password
-            
+        return password
+
+def analyze_password(password):
+    passinfo["length"] = len(password)
+    passinfo["number"] = passutils.pass_has_chartype(password, passutils.NUMS)
+    passinfo["lowercase"] = passutils.pass_has_chartype(password, passutils.LOWER)
+    passinfo["uppercase"] = passutils.pass_has_chartype(password, passutils.UPPER)
+    passinfo["secsymbol"] = passutils.pass_has_chartype(password, passutils.SEC_SYMB)
+    passinfo["commsymbol"] = passutils.pass_has_chartype(password, passutils.COMM_SYMB)
+    passinfo["qwertysymbol"] = passutils.pass_has_chartype(password, passutils.QWERTY_SYMB)
+
+def calc_passwords():
+    charset = 0
+    if passinfo["number"]:
+        charset += len(passutils.NUMS)
+    if passinfo["lowercase"]:
+        charset += len(passutils.LOWER)
+    if passinfo["uppercase"]:
+        charset += len(passutils.UPPER)
+    if passinfo["secsymbol"]:
+        charset += len(passutils.SEC_SYMB)
+    if passinfo["commsymbol"]:
+        charset += len(passutils.COMM_SYMB)
+    if passinfo["qwertysymbol"]:
+        charset += len(passutils.QWERTY_SYMB)
+
+    return charset**passinfo["length"]
+
+def bruteforce_time(num_passwords, hashrate):
+    return num_passwords/hashrate
+
 
 """         contrasena=input("Ingrese la contraseña para analizar: ")
             resultado=analizador_contrasena(contrasena)
@@ -33,12 +80,12 @@ def get_password():
                 for sugerencia in resultado["sugerencias"]:
                     print(f"  * {sugerencia}") """
 
-import re
+""" import re
 def analizador_contrasena(contrasena):
-    """
+    ""
     :param contrasena: str, contraseña a analizar.
     :return: dict, resultado del analisis.
-    """
+    ""
     
     resultado={
         "longitud": False,
@@ -99,4 +146,4 @@ def analizador_contrasena(contrasena):
     elif len(resultado["sugerencias"]) <=2:
         resultado["fortaleza"]="Moderada"
         
-    return resultado
+    return resultado """
