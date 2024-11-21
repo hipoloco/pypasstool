@@ -1,7 +1,8 @@
 from getpass import getpass
 
 from modules import passutils
-from modules.utils import clear_screen, cprint
+from modules.utils import clear_screen, cprint, secs_to_time
+from modules.constants import DEFAULT_HASHCALC
 
 passinfo = {
     "length": 0,
@@ -48,7 +49,7 @@ def analyze_password(password):
     passinfo["commsymbol"] = passutils.pass_has_chartype(password, passutils.COMM_SYMB)
     passinfo["qwertysymbol"] = passutils.pass_has_chartype(password, passutils.QWERTY_SYMB)
 
-def calc_passwords():
+def calc_passwords(pass_lenght):
     charset = 0
     if passinfo["number"]:
         charset += len(passutils.NUMS)
@@ -63,11 +64,23 @@ def calc_passwords():
     if passinfo["qwertysymbol"]:
         charset += len(passutils.QWERTY_SYMB)
 
-    return charset**passinfo["length"]
+    return charset**pass_lenght
 
 def bruteforce_time(num_passwords, hashrate):
     return num_passwords/hashrate
 
+def checkpass():
+    password = get_password()
+
+    analyze_password(password)
+    num_passwords = calc_passwords(passinfo["length"])
+    pass_breaktime = bruteforce_time(num_passwords, DEFAULT_HASHCALC)
+    breaktime_text = secs_to_time(pass_breaktime)
+
+    print(f"Tiempo para romper la contraseña: {breaktime_text}")
+    getpass("\nPresione ENTER para volver al menú principal.")
+
+    
 
 """         contrasena=input("Ingrese la contraseña para analizar: ")
             resultado=analizador_contrasena(contrasena)

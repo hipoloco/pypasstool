@@ -19,23 +19,6 @@ def cprint(text, color):
     print(f"{color}{text}{COLORS['RST']}")
 
 def secs_to_time(seconds):
-    """
-    Convierte una duration de tiempo en segundos a una representación en cadena según los siguientes criterios:
-    
-    - "Instantáneo" cuando el tiempo sea menor de 1 segundo
-    - "# segundo(s)" cuando el tiempo sea menor a 1 minuto
-    - "# minuto(s)" cuando el tiempo sea menor a 1 hora
-    - "# hora(s)" cuando el tiempo sea menor a 1 día
-    - "# semana(s)" cuando el tiempo sea menor a 1 mes
-    - "# mes(es)" cuando el tiempo sea menor a 1 año
-    - "# año(s)" cuando el tiempo supere el año
-    
-    Args:
-        seconds (float o int): duration de tiempo en segundos.
-    
-    Returns:
-        str: Representación en cadena del tiempo.
-    """
     # Definición de las conversiones en segundos
     SECOND = 1
     MINUTE = 60 * SECOND
