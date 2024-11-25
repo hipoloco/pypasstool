@@ -37,11 +37,11 @@ DEFAULT_DEVICE_HASHRATE = DEVICE_HASHRATES["RTX4090"]["MD5"]*12 # Simula 12 disp
 
 # Límites en segundos para clasificar la seguridad de una contraseña (ruptura por fuerza bruta)
 # Categorías:
-# - 0 a 1 segundo: Extremadamente insegura
-# - Hasta 1 día (24*60*60): Muy insegura
-# - Hasta 1 semana (7*24*60*60): Insegura
-# - Hasta 1 mes (30*24*60*60): Levemente insegura
-# - Más de 1 mes: Segura
+# - 0 a 1 segundo: Extremadamente débil
+# - Hasta 1 día (24*60*60): Muy débil
+# - Hasta 1 semana (7*24*60*60): Débil
+# - Hasta 1 mes (30*24*60*60): Fuerte
+# - Más de 1 mes: Muy fuerte
 PASSWORD_SECURITY_LIMITS = [
     1,                # 1 segundo
     24 * 60 * 60,     # 1 día
