@@ -1,5 +1,5 @@
 APP_NAME = "pypasstool"
-VERSION = "0.0.1"
+APP_VER = "0.1.0"
 
 # Constantes de colores
 COLORS = {

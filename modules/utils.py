@@ -1,5 +1,21 @@
-import os
+import os, sys
+from getpass import getpass
+
 from modules.constants import COLORS
+
+def signal_handler_return():
+    cprint("\n\n[*] Tarea interrumpida, presione ENTER para voler al menú principal.", "C", "")
+    try:
+        getpass("")
+    except KeyboardInterrupt:
+        signal_handler_exit()
+
+def signal_handler_exit():
+    cprint("\n\n[*] Programa interrumpido, saliendo de manera controlada...\n", "R")
+    sys.exit(0)
+
+""" def signal_handler_exit(sig, frame):
+    signal_handler_exit_text() """
 
 def clear_screen():
     if os.name == "nt":
@@ -7,7 +23,7 @@ def clear_screen():
     else:
         os.system("clear")
 
-def cprint(text, color):
+def cprint(text, color, end="\n"):
     if not isinstance(text, str):
         raise ValueError("El texto a imprimir debe ser un string.")
 
@@ -16,7 +32,7 @@ def cprint(text, color):
     
     # Usar el color por defecto si no se encuentra el color solicitado
     color = COLORS.get(color, COLORS.get("RST"))
-    print(f"{color}{text}{COLORS['RST']}")
+    print(f"{color}{text}{COLORS['RST']}", end=end)
 
 def secs_to_time(seconds):
     # Definición de las conversiones en segundos
@@ -51,6 +67,22 @@ def secs_to_time(seconds):
         unit = "mes" if duration == 1 else "meses"
         return f"{duration} {unit}"
     else:
-        duration = int(seconds // YEAR)
+        duration_years = seconds / YEAR
+        if duration_years >= 1e18:
+            duration = duration_years / 1e18
+            suffix = "T"
+        elif duration_years >= 1e12:
+            duration = duration_years / 1e12
+            suffix = "B"
+        elif duration_years >= 1e6:
+            duration = duration_years / 1e6
+            suffix = "M"
+        else:
+            duration = int(duration_years)
+            suffix = ""
+            
         unit = "año" if duration == 1 else "años"
-        return f"{duration} {unit}"
+        if suffix == "":
+            return f"{duration} {unit}"
+        else:
+            return f"{duration:.2f}{suffix} {unit}"
