@@ -1,6 +1,6 @@
-from modules.passutils import QWERTY_SYMB, COMM_SYMB, SEC_SYMB, NUMS, LOWER, UPPER
+from modules.passutils import LOW_COMP_SYMB, MED_COMP_SYMB, HIGH_COMP_SYMB, DIGITS, LOWER, UPPER
 from getpass import getpass
-from modules.utils import clear_screen, cprint
+from modules.utils import clear_console, cprint
 import time
 
 def pass_gen(largo, charsets): #la funcion genera una contraseña con el largo que indica el usuario y los sets de caracteres elegidos
@@ -29,10 +29,10 @@ def cumple_requisitos(contra, charsets): #esta funcion verifica que la contrase�
 def seleccionar_conjuntos(): #Permite al usuario seleccionar los caracteres que desea incluir en la contraseña generada.
     
     opciones = {
-        "1": ("Símbolos especiales (QWERTY)\n ¡ATENCIÓN!, puede que estos simbolos no sean aceptados por algunos sitios para su contraseña", QWERTY_SYMB),
-        "2": ("Símbolos de comunicación", COMM_SYMB),
-        "3": ("Símbolos comunes", SEC_SYMB),
-        "4": ("Números", NUMS),
+        "1": ("Símbolos especiales (QWERTY)\n ¡ATENCIÓN!, puede que estos simbolos no sean aceptados por algunos sitios para su contraseña", LOW_COMP_SYMB),
+        "2": ("Símbolos de comunicación", MED_COMP_SYMB),
+        "3": ("Símbolos comunes", HIGH_COMP_SYMB),
+        "4": ("Números", DIGITS),
         "5": ("Letras minúsculas", LOWER),
         "6": ("Letras mayúsculas", UPPER),
     }
@@ -58,7 +58,7 @@ def seleccionar_conjuntos(): #Permite al usuario seleccionar los caracteres que 
 
 def passgenerator():
     try:
-        clear_screen()
+        clear_console()
         cprint("=== OPCIÓN 2: GENERADOR DE CONTRASEÑAS ===\n", "Y")
         
         while True:
@@ -66,14 +66,14 @@ def passgenerator():
             
             if not largo.isdigit():
                 getpass("\nLo ingresado no es un número, presione ENTER para continuar")
-                clear_screen()
+                clear_console()
                 continue
             
             largo = int(largo)
             
             if largo < 8 or largo > 18:
                 getpass("\nLa contraseña debe tener entre 8 y 18 caracteres, presione ENTER para continuar")
-                clear_screen()
+                clear_console()
                 continue
 
             # Permitir al usuario seleccionar los conjuntos de caracteres

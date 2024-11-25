@@ -1,8 +1,16 @@
+"""
+constants.py
+
+Este módulo contiene todas las constantes utilizadas en la aplicación `pypasstool`. 
+Incluye configuraciones generales, constantes de color, valores de hashrate para cálculos de contraseñas y límites para evaluar la seguridad.
+"""
+
+# Nombre y versión de la aplicación
 APP_NAME = "pypasstool"
 APP_VER = "0.1.0"
 
-# Constantes de colores
-COLORS = {
+# Constantes de colores para uso en salida de consola con la función cprint
+ANSI_COLORS = {
     "R": "\033[31m",
     "G": "\033[32m",
     "B": "\033[34m",
@@ -12,19 +20,31 @@ COLORS = {
     "RST": "\033[0m"
 }
 
-# Hardware hashrate
-RTX4090_HASHES = {
+# Hasrate (velocidades de procesamiento) para dispositivos específicos
+HASHRATES_RTX4090 = {
     "BCRYPT": 1.84e5,
     "MD5": 1.641e11,
     "SHA-1": 5.06387e10
 }
 
-HASHRATE = {
-    "RTX4090": RTX4090_HASHES
+# Diccionario para agregar otros dispositivos en el futuro
+DEVICE_HASHRATES = {
+    "RTX4090": HASHRATES_RTX4090
 }
 
-DEFAULT_HASHCALC = HASHRATE["RTX4090"]["MD5"]*12
+# Hasrate por defecto para calcular tiempos de ruptura de contraseñas
+DEFAULT_DEVICE_HASHRATE = DEVICE_HASHRATES["RTX4090"]["MD5"]*12 # Simula 12 dispositivos RTX 4090
 
-LIMIT_TIMES = [
-    1, 24*60*60, 7*24*60*60, 30*24*60*60
+# Límites en segundos para clasificar la seguridad de una contraseña (ruptura por fuerza bruta)
+# Categorías:
+# - 0 a 1 segundo: Extremadamente insegura
+# - Hasta 1 día (24*60*60): Muy insegura
+# - Hasta 1 semana (7*24*60*60): Insegura
+# - Hasta 1 mes (30*24*60*60): Levemente insegura
+# - Más de 1 mes: Segura
+PASSWORD_SECURITY_LIMITS = [
+    1,                # 1 segundo
+    24 * 60 * 60,     # 1 día
+    7 * 24 * 60 * 60, # 1 semana
+    30 * 24 * 60 * 60 # 1 mes
 ]
