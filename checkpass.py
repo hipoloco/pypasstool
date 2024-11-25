@@ -2,10 +2,8 @@ import signal, sys
 from getpass import getpass
 
 from modules import passutils
-from modules.utils import clear_screen, cprint, secs_to_time, signal_handler, signal_handler_exit
+from modules.utils import clear_screen, cprint, secs_to_time, signal_handler_return
 from modules.constants import DEFAULT_HASHCALC, COLOR_LIMIT_TIMES
-
-signal.signal(signal.SIGINT, signal_handler)
 
 passinfo = {
     "length": 0,
@@ -20,32 +18,29 @@ passinfo = {
 
 def header():
     clear_screen()
-    cprint("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS ===\n", "Y")
+    cprint("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n", "Y")
 
 def get_password():
-    try:
-        while True:
-            header()
-            password = getpass("Ingrese la contraseña a analizar: ")
+    while True:
+        header()
+        password = getpass("Ingrese la contraseña a analizar: ")
 
-            if not password:
-                getpass("\nNo ha ingresado una contraseña, presione ENTER para continuar.")
-                continue
-            if " " in password:
-                getpass("\nLa contraseña no puede tener espacios, presione ENTER para continuar.")
-                continue
-            if not passutils.validate_password(password):
-                getpass("\nLa contraseña contiene caracteres inválidos, presione ENTER para continuar.")
-                continue
+        if not password:
+            getpass("\nNo ha ingresado una contraseña, presione ENTER para continuar.")
+            continue
+        if " " in password:
+            getpass("\nLa contraseña no puede tener espacios, presione ENTER para continuar.")
+            continue
+        if not passutils.validate_password(password):
+            getpass("\nLa contraseña contiene caracteres inválidos, presione ENTER para continuar.")
+            continue
 
-            repeat_pass = getpass("Ingrese nuevamente la contraseña: ")
-            if password != repeat_pass:
-                getpass("\nLas contraseñas no coinciden, presione ENTER para continuar.")
-                continue
+        repeat_pass = getpass("Ingrese nuevamente la contraseña: ")
+        if password != repeat_pass:
+            getpass("\nLas contraseñas no coinciden, presione ENTER para continuar.")
+            continue
 
-            return password
-    except KeyboardInterrupt:
-        signal_handler_exit()
+        return password
 
 def analyze_password(password):
     passinfo["length"] = len(password)
@@ -76,16 +71,13 @@ def analyze_password(password):
         else:
             cprint("No", "R")
 
-        try:
-            confirmation = input("\nDesea verificar la seguridad de su contraseña? [S/n]: ")
-            if confirmation not in ["", "s", "S", "n", "N"]:
-                getpass("\nOpción incorrecta, presione ENTER para continuar.")
-                continue
-            if confirmation in ["n", "N"]:
-                getpass("\nVerificación cancelada, presione ENTER para volver al menú principal.")
-                return False
-        except KeyboardInterrupt:
-            signal_handler_exit()
+        confirmation = input("\nDesea verificar la seguridad de su contraseña? [S/n]: ")
+        if confirmation not in ["", "s", "S", "n", "N"]:
+            getpass("\nOpción incorrecta, presione ENTER para continuar.")
+            continue
+        if confirmation in ["n", "N"]:
+            getpass("\nVerificación cancelada, presione ENTER para volver al menú principal.")
+            return False
         
         return True
 
@@ -136,17 +128,18 @@ def set_color_message():
         return "RST"
 
 def checkpass():
-    password = get_password()
+    try:
+        password = get_password()
 
-    if analyze_password(password):
-        num_passwords = calc_passwords(passinfo["length"])
-        pass_breaktime = bruteforce_time(num_passwords, DEFAULT_HASHCALC)
-        breaktime_text = secs_to_time(pass_breaktime)
-        is_password_secure(pass_breaktime)
-        breaktime_text_color = set_color_message()
+        if analyze_password(password):
+            num_passwords = calc_passwords(passinfo["length"])
+            pass_breaktime = bruteforce_time(num_passwords, DEFAULT_HASHCALC)
+            breaktime_text = secs_to_time(pass_breaktime)
+            is_password_secure(pass_breaktime)
+            breaktime_text_color = set_color_message()
 
-        print(f"Tiempo para romper la contraseña: ", end = ""); cprint(breaktime_text, breaktime_text_color)
-        try:
+            print(f"Tiempo para romper la contraseña: ", end = ""); cprint(breaktime_text, breaktime_text_color)
             getpass("\nPresione ENTER para volver al menú principal.")
-        except KeyboardInterrupt:
-            signal_handler_exit()
+
+    except KeyboardInterrupt:
+        signal_handler_return()

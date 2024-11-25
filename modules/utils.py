@@ -1,12 +1,21 @@
 import os, sys
+from getpass import getpass
+
 from modules.constants import COLORS
 
+def signal_handler_return():
+    cprint("\n\n[*] Tarea interrumpida, presione ENTER para voler al menú principal.", "C", "")
+    try:
+        getpass("")
+    except KeyboardInterrupt:
+        signal_handler_exit()
+
 def signal_handler_exit():
-    cprint("\n\n[*] Programa interrumpido, saliendo de manera controlada...\n", "Y")
+    cprint("\n\n[*] Programa interrumpido, saliendo de manera controlada...\n", "R")
     sys.exit(0)
 
-def signal_handler(sig, frame):
-    signal_handler_exit()
+""" def signal_handler_exit(sig, frame):
+    signal_handler_exit_text() """
 
 def clear_screen():
     if os.name == "nt":
