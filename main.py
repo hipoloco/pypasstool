@@ -1,7 +1,10 @@
-import checkpass, passgenerator
-
-from modules.utils import clear_screen, cprint
+import signal
 from getpass import getpass
+
+import checkpass, passgenerator
+from modules.utils import clear_screen, cprint, signal_handler
+
+signal.signal(signal.SIGINT, signal_handler)
 
 def mostrar_menu():
     clear_screen()

@@ -1,5 +1,12 @@
-import os
+import os, sys
 from modules.constants import COLORS
+
+def signal_handler_exit():
+    cprint("\n\n[*] Programa interrumpido, saliendo de manera controlada...\n", "Y")
+    sys.exit(0)
+
+def signal_handler(sig, frame):
+    signal_handler_exit()
 
 def clear_screen():
     if os.name == "nt":
