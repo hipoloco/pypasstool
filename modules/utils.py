@@ -7,7 +7,7 @@ def clear_screen():
     else:
         os.system("clear")
 
-def cprint(text, color):
+def cprint(text, color, end="\n"):
     if not isinstance(text, str):
         raise ValueError("El texto a imprimir debe ser un string.")
 
@@ -16,7 +16,7 @@ def cprint(text, color):
     
     # Usar el color por defecto si no se encuentra el color solicitado
     color = COLORS.get(color, COLORS.get("RST"))
-    print(f"{color}{text}{COLORS['RST']}")
+    print(f"{color}{text}{COLORS['RST']}", end=end)
 
 def secs_to_time(seconds):
     # Definición de las conversiones en segundos

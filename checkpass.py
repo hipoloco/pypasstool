@@ -50,6 +50,36 @@ def analyze_password(password):
     passinfo["commsymbol"] = passutils.pass_has_chartype(password, passutils.COMM_SYMB)
     passinfo["qwertysymbol"] = passutils.pass_has_chartype(password, passutils.QWERTY_SYMB)
 
+    while True:
+        header()
+        print("Resumen de la contraseña ingresada:")
+        cprint("[*] ", "Y", ""); print("Longitud: ", end=""); cprint(str(passinfo["length"]), "R") if passinfo["length"] <= 10 else cprint(str(passinfo["length"]), "G")
+        cprint("[*] ", "Y", ""); print("Tiene números: ", end=""); cprint("Si", "G") if passinfo["number"] else cprint("No", "R")
+        cprint("[*] ", "Y", ""); print("Tiene letras minúsculas: ", end=""); cprint("Si", "G") if passinfo["lowercase"] else cprint("No", "R")
+        cprint("[*] ", "Y", ""); print("Tiene letras mayúsculas: ", end=""); cprint("Si", "G") if passinfo["uppercase"] else cprint("No", "R")
+        cprint("[*] ", "Y", ""); print("Tiene símbolos: ", end="")
+        if passinfo["secsymbol"] or passinfo["commsymbol"] or passinfo["qwertysymbol"]:
+            cprint("Si", "G")
+            cprint("[*] ", "Y", ""); print("Compatibilidad de símbolos utilzados: ", end="")
+            if passinfo["qwertysymbol"]:
+                cprint("Baja", "R")
+            elif passinfo["commsymbol"]:
+                cprint("Media", "C")
+            else:
+                cprint("Alta", "G")
+        else:
+            cprint("No", "R")
+
+        confirmation = input("\nDesea verificar la seguridad de su contraseña? [S/n]: ")
+        if confirmation not in ["", "s", "S", "n", "N"]:
+            getpass("\nOpción incorrecta, presione ENTER para continuar.")
+            continue
+        if confirmation in ["n", "N"]:
+            getpass("\nVerificación cancelada, presione ENTER para volver al menú principal.")
+            return False
+        
+        return True
+
 def calc_passwords(pass_lenght):
     charset = 0
     if passinfo["number"]:
@@ -99,14 +129,12 @@ def set_color_message():
 def checkpass():
     password = get_password()
 
-    analyze_password(password)
+    if analyze_password(password):
+        num_passwords = calc_passwords(passinfo["length"])
+        pass_breaktime = bruteforce_time(num_passwords, DEFAULT_HASHCALC)
+        breaktime_text = secs_to_time(pass_breaktime)
+        is_password_secure(pass_breaktime)
+        breaktime_text_color = set_color_message()
 
-    num_passwords = calc_passwords(passinfo["length"])
-    pass_breaktime = bruteforce_time(num_passwords, DEFAULT_HASHCALC)
-    breaktime_text = secs_to_time(pass_breaktime)
-    is_password_secure(pass_breaktime)
-    breaktime_text_color = set_color_message()
-
-    print(f"Tiempo para romper la contraseña: ", end = "")
-    cprint(breaktime_text, breaktime_text_color)
-    getpass("\nPresione ENTER para volver al menú principal.")
+        print(f"Tiempo para romper la contraseña: ", end = ""); cprint(breaktime_text, breaktime_text_color)
+        getpass("\nPresione ENTER para volver al menú principal.")
