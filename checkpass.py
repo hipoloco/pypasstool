@@ -227,9 +227,9 @@ def password_improvements(passinfo):
         elif passinfo.security == 1:
             improvements_list.append("Tu contraseña es muy débil a ataques de fuerza bruta. Se recomienda mejorarla para mayor seguridad.")
         elif passinfo.security == 2:
-            improvements_list.append("Tu contraseña es débil a ataques de fuerza bruta, pero podría mejorarse.")
+            improvements_list.append("Tu contraseña es débil a ataques de fuerza bruta. debería mejorarse.")
         elif passinfo.security == 3:
-            improvements_list.append("Tu contraseña es fuerte a ataques de fuerza bruta, aunque siempre hay margen para optimizarla.")
+            improvements_list.append("Tu contraseña es fuerte a ataques de fuerza bruta, pero puedes hacerla más segura.")
 
         if passinfo.length < 12:
             improvements_list.append("Aumenta la longitud de tu contraseña. Se recomienda al menos 12 caracteres.")
