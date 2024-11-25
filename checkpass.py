@@ -206,6 +206,62 @@ def get_security_color(passinfo_security):
     color_map = {0: "M", 1: "R", 2: "Y", 3: "C", 4: "G"}
     return color_map.get(passinfo_security, "RST")
 
+def password_improvements(passinfo):
+    """
+    Genera sugerencias para mejorar la seguridad de la contraseña en base a sus propiedades
+    y nivel de seguridad.
+
+    Args:
+        passinfo (PasswordInfo): Objeto con las propiedades de la contraseña.
+
+    Returns:
+        improvements_list (list[str]): Lista de sugerencias para mejorar la contraseña.
+    """
+    improvements_list = []
+
+    if passinfo.security == 4:
+        improvements_list.append("Tu contraseña es muy segura. ¡Buen trabajo!")
+    else:
+        if passinfo.security == 0:
+            improvements_list.append("Tu contraseña es extremadamente débil a ataques de fuerza bruta. Considera cambiarla de inmediato.")
+        elif passinfo.security == 1:
+            improvements_list.append("Tu contraseña es muy débil a ataques de fuerza bruta. Se recomienda mejorarla para mayor seguridad.")
+        elif passinfo.security == 2:
+            improvements_list.append("Tu contraseña es débil a ataques de fuerza bruta, pero podría mejorarse.")
+        elif passinfo.security == 3:
+            improvements_list.append("Tu contraseña es fuerte a ataques de fuerza bruta, aunque siempre hay margen para optimizarla.")
+
+        if passinfo.length < 12:
+            improvements_list.append("Aumenta la longitud de tu contraseña. Se recomienda al menos 12 caracteres.")
+        if not passinfo.digits:
+            improvements_list.append("Incluye números en tu contraseña para mayor variedad.")
+        if not passinfo.lower:
+            improvements_list.append("Incluye letras minúsculas en tu contraseña.")
+        if not passinfo.upper:
+            improvements_list.append("Incluye letras mayúsculas en tu contraseña.")
+        if not (passinfo.highcompsymb or passinfo.medcompsymb or passinfo.lowcompsymb):
+            improvements_list.append("Agrega símbolos (como @, #, $, etc.) para aumentar la complejidad.")
+
+    return improvements_list
+
+def show_bruteforce_summary(improvements_list, breaktime_text, breaktime_text_color):
+    """
+    Muestra un resumen del análisis de fuerza bruta para la contraseña, incluyendo el tiempo estimado 
+    para romperla y sugerencias de mejora.
+
+    Args:
+        improvements_list (list[str]): Lista de sugerencias para mejorar la seguridad de la contraseña.
+        breaktime_text (str): Texto formateado que representa el tiempo estimado para romper la contraseña.
+        breaktime_text_color (str): Código de color ANSI para mostrar el tiempo estimado con formato.
+    """
+
+    show_header()
+
+    print("Resultados del análisis:")
+    cprint("[*] ", "Y", ""); print(f"Tiempo para romper la contraseña: ", end = ""); cprint(breaktime_text, breaktime_text_color)
+    for improvement in improvements_list:
+        cprint("[*] ", "Y", ""); print(improvement)
+
 def checkpass():
     """
     Punto de entrada principal para el análisis de contraseñas.
@@ -227,8 +283,9 @@ def checkpass():
             breaktime_text = format_time(pass_breaktime)
             set_password_secururity(pass_breaktime, passinfo)
             breaktime_text_color = get_security_color(passinfo.security)
+            improvements_list = password_improvements(passinfo)
 
-            print(f"Tiempo para romper la contraseña: ", end = ""); cprint(breaktime_text, breaktime_text_color)
+            show_bruteforce_summary(improvements_list, breaktime_text, breaktime_text_color)
             try:
                 getpass("\nPresione ENTER para volver al menú principal.")
             except KeyboardInterrupt:
