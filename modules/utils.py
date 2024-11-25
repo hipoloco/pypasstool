@@ -51,6 +51,22 @@ def secs_to_time(seconds):
         unit = "mes" if duration == 1 else "meses"
         return f"{duration} {unit}"
     else:
-        duration = int(seconds // YEAR)
+        duration_years = seconds / YEAR
+        if duration_years >= 1e18:
+            duration = duration_years / 1e18
+            suffix = "T"
+        elif duration_years >= 1e12:
+            duration = duration_years / 1e12
+            suffix = "B"
+        elif duration_years >= 1e6:
+            duration = duration_years / 1e6
+            suffix = "M"
+        else:
+            duration = int(duration_years)
+            suffix = ""
+            
         unit = "año" if duration == 1 else "años"
-        return f"{duration} {unit}"
+        if suffix == "":
+            return f"{duration} {unit}"
+        else:
+            return f"{duration:.2f}{suffix} {unit}"
