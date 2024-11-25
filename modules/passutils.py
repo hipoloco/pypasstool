@@ -29,3 +29,14 @@ def pass_has_chartype(password, char_list):
 
 def validate_password(password):
     return all(char in ALLOWED_CHARS for char in password)
+
+class PasswordInfo:
+    def __init__(self):
+        self.length = 0
+        self.number = False
+        self.lowercase = False
+        self.uppercase = False
+        self.secsymbol = False
+        self.commsymbol = False
+        self.qwertysymbol = False
+        self.security = 0
