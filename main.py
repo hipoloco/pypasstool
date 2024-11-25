@@ -32,10 +32,7 @@ def menu():
             cprint(f"\n[*] Saliendo de {APP_NAME}.\n", "G")
             sys.exit(0)
         else:
-            try:
-                getpass("\nOpción incorrecta, presione ENTER para continuar.")
-            except KeyboardInterrupt:
-                signal_handler_exit()
+            getpass("\nOpción incorrecta, presione ENTER para continuar.")
 
 try:
     menu()
