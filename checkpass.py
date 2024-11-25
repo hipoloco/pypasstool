@@ -2,7 +2,7 @@ import signal, sys
 from getpass import getpass
 
 from modules import passutils
-from modules.utils import clear_screen, cprint, secs_to_time, signal_handler_return
+from modules.utils import clear_screen, cprint, secs_to_time, signal_handler_return, signal_handler_exit
 from modules.constants import DEFAULT_HASHCALC, COLOR_LIMIT_TIMES
 
 passinfo = {
@@ -139,7 +139,10 @@ def checkpass():
             breaktime_text_color = set_color_message()
 
             print(f"Tiempo para romper la contraseña: ", end = ""); cprint(breaktime_text, breaktime_text_color)
-            getpass("\nPresione ENTER para volver al menú principal.")
+            try:
+                getpass("\nPresione ENTER para volver al menú principal.")
+            except KeyboardInterrupt:
+                signal_handler_exit()
 
     except KeyboardInterrupt:
         signal_handler_return()
