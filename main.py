@@ -3,12 +3,12 @@ from getpass import getpass
 
 import checkpass, passgenerator
 from modules.constants import APP_NAME, APP_VER
-from modules.utils import clear_screen, cprint, signal_handler_exit
+from modules.utils import clear_console, cprint, handle_program_exit
 
 #signal.signal(signal.SIGINT, signal_handler_exit)
 
 def mostrar_menu():
-    clear_screen()
+    clear_console()
     cprint(f"=== {APP_NAME} v{APP_VER} - MENÚ PRINCIPAL ===\n", "Y")
     print("1. Analizar contraseña")
     print("2. Generar contraseña")
@@ -37,4 +37,4 @@ def menu():
 try:
     menu()
 except KeyboardInterrupt:
-    signal_handler_exit()
+    handle_program_exit()
