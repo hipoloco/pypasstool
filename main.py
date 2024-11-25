@@ -1,11 +1,15 @@
-import checkpass, passgenerator
-
-from modules.utils import clear_screen, cprint
+import signal, sys
 from getpass import getpass
+
+import checkpass, passgenerator
+from modules.constants import APP_NAME, APP_VER
+from modules.utils import clear_screen, cprint, signal_handler_exit
+
+#signal.signal(signal.SIGINT, signal_handler_exit)
 
 def mostrar_menu():
     clear_screen()
-    cprint("===== MENÚ PRINCIPAL =====\n", "Y")
+    cprint(f"=== {APP_NAME} v{APP_VER} - MENÚ PRINCIPAL ===\n", "Y")
     print("1. Analizar contraseña")
     print("2. Generar contraseña")
     print("3. Hashear contraseña")
@@ -25,8 +29,12 @@ def menu():
         elif opcion == "3":
             print("Ejecutar opción 3")
         elif opcion == "4":
-            print("Ejecutar opción 4")
+            cprint(f"\n[*] Saliendo de {APP_NAME}.\n", "G")
+            sys.exit(0)
         else:
             getpass("\nOpción incorrecta, presione ENTER para continuar.")
 
-menu()
+try:
+    menu()
+except KeyboardInterrupt:
+    signal_handler_exit()
