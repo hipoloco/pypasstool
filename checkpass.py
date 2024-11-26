@@ -2,68 +2,15 @@
 checkpass.py
 
 Este módulo implementa la lógica principal del análisis de contraseñas, incluyendo la verificación
-de sus características, cálculo de tiempos de ruptura por fuerza bruta y determinación de su nivel
+de sus propiedades, cálculo de tiempos de ruptura por fuerza bruta y determinación de su nivel
 de seguridad.
 """
 
-import signal
-import sys
 from getpass import getpass
 
 from modules import passutils
-from modules.utils import clear_console, cprint, format_time, handle_task_stop, handle_program_exit
+from modules.utils import clear_console, cprint, format_time, handle_task_stop, handle_program_exit, show_header
 from modules.constants import DEFAULT_DEVICE_HASHRATE, PASSWORD_SECURITY_LIMITS
-
-def show_header():
-    """
-    Limpia la consola y muestra el encabezado del analizador de contraseñas.
-    """
-
-    clear_console()
-    cprint("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n", "Y")
-
-def input_password():
-    """
-    Solicita al usuario una contraseña válida y la confirma.
-
-    Returns:
-        str: Contraseña válida ingresada por el usuario.
-    """
-
-    while True:
-        show_header()
-        password = getpass("Ingrese la contraseña a analizar: ")
-
-        error_message = validate_password(password)
-        if error_message:
-            getpass(f"\n{error_message} presione ENTER para continuar.")
-            continue
-
-        repeat_pass = getpass("Ingrese nuevamente la contraseña: ")
-        if password != repeat_pass:
-            getpass("\nLas contraseñas no coinciden, presione ENTER para continuar.")
-            continue
-
-        return password
-
-def validate_password(password):
-    """
-    Valida la contraseña y genera un mensaje de error en caso de que no sea válida.
-
-    Args:
-        password (str): Contraseña ingresada.
-
-    Returns:
-        str | None: Mensaje de error si la contraseña no es válida, None si es válida.
-    """
-
-    if not password:
-        return "No ha ingresado una contraseña,"
-    if " " in password:
-        return "La contraseña no puede tener espacios,"
-    if not passutils.is_password_vaild(password):
-        return "La contraseña contiene caracteres inválidos,"
-    return None
 
 def analyze_password_props(password, passinfo):
     """
@@ -121,21 +68,19 @@ def confirm_bruteforce_analysis(passinfo):
         passinfo (PasswordInfo): Objeto con las propiedades de la contraseña.
 
     Returns:
-        bool: True si el usuario confirma, False si cancela.
+       None | bool: None si la respuesta no es válida, True si el usuario confirma, False si cancela.
     """
 
-    while True:
-        show_header()
-        show_password_summary(passinfo)
-        confirmation = input("\nDesea verificar la seguridad de su contraseña? [S/n]: ")
-        if confirmation not in ["", "s", "S", "n", "N"]:
-            getpass("\nOpción incorrecta, presione ENTER para continuar.")
-            continue
-        if confirmation in ["n", "N"]:
-            getpass("\nVerificación cancelada, presione ENTER para volver al menú principal.")
-            return False
-        
-        return True
+    show_password_summary(passinfo)
+    confirmation = input("\nDesea verificar la seguridad de su contraseña? [S/n]: ")
+    if confirmation not in ["", "s", "S", "n", "N"]:
+        getpass("\nOpción incorrecta, presione ENTER para continuar.")
+        return None
+    if confirmation in ["n", "N"]:
+        getpass("\nVerificación cancelada, presione ENTER para volver al menú principal.")
+        return False
+    
+    return True
 
 def calc_password_combinations(passinfo):
     """
@@ -255,8 +200,6 @@ def show_bruteforce_summary(improvements_list, breaktime_text, breaktime_text_co
         breaktime_text_color (str): Código de color ANSI para mostrar el tiempo estimado con formato.
     """
 
-    show_header()
-
     print("Resultados del análisis:")
     cprint("[*] ", "Y", ""); print(f"Tiempo para romper la contraseña: ", end = ""); cprint(breaktime_text, breaktime_text_color)
     for improvement in improvements_list:
@@ -273,11 +216,20 @@ def checkpass():
     """
 
     try:
-        password = input_password()
+        password = None
+        while password == None:
+            show_header("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
+            password = passutils.input_password()
+        
         passinfo = passutils.PasswordInfo()
         analyze_password_props(password, passinfo)
 
-        if confirm_bruteforce_analysis(passinfo):
+        conf = None
+        while conf == None:
+            show_header("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
+            conf = confirm_bruteforce_analysis(passinfo)
+
+        if conf:
             num_passwords = calc_password_combinations(passinfo)
             pass_breaktime = get_bruteforce_time(num_passwords, DEFAULT_DEVICE_HASHRATE)
             breaktime_text = format_time(pass_breaktime)
@@ -285,6 +237,7 @@ def checkpass():
             breaktime_text_color = get_security_color(passinfo.security)
             improvements_list = password_improvements(passinfo)
 
+            show_header("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
             show_bruteforce_summary(improvements_list, breaktime_text, breaktime_text_color)
             try:
                 getpass("\nPresione ENTER para volver al menú principal.")
