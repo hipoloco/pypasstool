@@ -7,7 +7,7 @@ Incluye configuraciones generales, constantes de color, valores de hashrate para
 
 # Nombre y versión de la aplicación
 APP_NAME = "pypasstool"
-APP_VER = "0.2.0"
+APP_VER = "0.3.0"
 
 # Constantes de colores para uso en salida de consola con la función cprint
 ANSI_COLORS = {
