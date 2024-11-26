@@ -6,6 +6,8 @@ Proporciona constantes para clasificar tipos de caracteres, funciones para anali
 y una clase para almacenar información sobre su seguridad.
 """
 
+from getpass import getpass
+
 # Conjuntos de caracteres clasificados por compatibilidad
 HIGH_COMP_SYMB = set([
     "!", "#", "$", "%", "&", "*", "@", "^"
@@ -58,6 +60,47 @@ def is_password_vaild(password):
         bool: True si todos los caracteres son válidos, False en caso contrario.
     """
     return all(char in VALID_PASS_CHARS for char in password)
+
+def input_password():
+    """
+    Solicita al usuario una contraseña válida y la confirma.
+
+    Returns:
+        None | str: None si la contraseña no es válida, contraseña si es válida y confirmada.
+    """
+
+    password = getpass("Ingrese la contraseña a analizar: ")
+
+    error_message = validate_password(password)
+    if error_message:
+        getpass(f"\n{error_message} presione ENTER para continuar.")
+        return None
+
+    repeat_pass = getpass("Ingrese nuevamente la contraseña: ")
+    if password != repeat_pass:
+        getpass("\nLas contraseñas no coinciden, presione ENTER para continuar.")
+        return None
+
+    return password
+
+def validate_password(password):
+    """
+    Valida la contraseña y genera un mensaje de error en caso de que no sea válida.
+
+    Args:
+        password (str): Contraseña ingresada.
+
+    Returns:
+        str | None: Mensaje de error si la contraseña no es válida, None si es válida.
+    """
+
+    if not password:
+        return "No ha ingresado una contraseña,"
+    if " " in password:
+        return "La contraseña no puede tener espacios,"
+    if not is_password_vaild(password):
+        return "La contraseña contiene caracteres inválidos,"
+    return None
 
 class PasswordInfo:
     """

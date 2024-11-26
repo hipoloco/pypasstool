@@ -69,3 +69,30 @@ def menu():
 
 if __name__ == "__main__":
     menu()
+
+def hashpass():
+    try:
+        password = None
+        while password == None:
+            show_header()
+            password = passutils.input_password()
+        
+        passinfo = passutils.PasswordInfo()
+        analyze_password_props(password, passinfo)
+
+        if confirm_bruteforce_analysis(passinfo):
+            num_passwords = calc_password_combinations(passinfo)
+            pass_breaktime = get_bruteforce_time(num_passwords, DEFAULT_DEVICE_HASHRATE)
+            breaktime_text = format_time(pass_breaktime)
+            set_password_secururity(pass_breaktime, passinfo)
+            breaktime_text_color = get_security_color(passinfo.security)
+            improvements_list = password_improvements(passinfo)
+
+            show_bruteforce_summary(improvements_list, breaktime_text, breaktime_text_color)
+            try:
+                getpass("\nPresione ENTER para volver al menú principal.")
+            except KeyboardInterrupt:
+                handle_program_exit()
+
+    except KeyboardInterrupt:
+        handle_task_stop()

@@ -126,3 +126,11 @@ def format_time(seconds):
             return f"{duration} {unit}"
         else:
             return f"{duration:.2f}{suffix} {unit}"
+
+def show_header(message):
+    """
+    Limpia la consola y muestra el encabezado del analizador de contraseñas.
+    """
+
+    clear_console()
+    cprint(message, "Y")
