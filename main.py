@@ -1,7 +1,7 @@
 import signal, sys
 from getpass import getpass
 
-import checkpass, passgenerator
+import checkpass, passgenerator, hashpass
 from modules.constants import APP_NAME, APP_VER
 from modules.utils import clear_console, cprint, handle_program_exit
 
@@ -27,7 +27,7 @@ def menu():
         elif opcion == "2":
             passgenerator.passgenerator()
         elif opcion == "3":
-            print("Ejecutar opción 3")
+            hashpass.hashpass()
         elif opcion == "4":
             cprint(f"\n[*] Saliendo de {APP_NAME}.\n", "G")
             sys.exit(0)

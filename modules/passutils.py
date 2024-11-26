@@ -69,7 +69,7 @@ def input_password():
         None | str: None si la contraseña no es válida, contraseña si es válida y confirmada.
     """
 
-    password = getpass("Ingrese la contraseña a analizar: ")
+    password = getpass("Ingrese la contraseña: ")
 
     error_message = validate_password(password)
     if error_message:
