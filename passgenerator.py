@@ -1,6 +1,7 @@
-from modules.passutils import LOW_COMP_SYMB, MED_COMP_SYMB, HIGH_COMP_SYMB, DIGITS, LOWER, UPPER
+from modules.passutils import LOW_COMP_SYMB, MED_COMP_SYMB, HIGH_COMP_SYMB, DIGITS, LOWER, UPPER,PasswordInfo,password_has_chartype
 from getpass import getpass
-from modules.utils import clear_console, cprint
+from modules.utils import clear_console, cprint,handle_task_stop,handle_program_exit
+from checkpass import show_password_summary,analyze_password_props,set_password_secururity
 import time
 
 def pass_gen(largo, charsets): #la funcion genera una contraseña con el largo que indica el usuario y los sets de caracteres elegidos
@@ -29,9 +30,9 @@ def cumple_requisitos(contra, charsets): #esta funcion verifica que la contrase�
 def seleccionar_conjuntos(): #Permite al usuario seleccionar los caracteres que desea incluir en la contraseña generada.
     
     opciones = {
-        "1": ("Símbolos especiales (QWERTY)\n ¡ATENCIÓN!, puede que estos simbolos no sean aceptados por algunos sitios para su contraseña", LOW_COMP_SYMB),
-        "2": ("Símbolos de comunicación", MED_COMP_SYMB),
-        "3": ("Símbolos comunes", HIGH_COMP_SYMB),
+        "1": ("Símbolos de baja compatibilidad", LOW_COMP_SYMB),
+        "2": ("Símbolos de compatibilidad media", MED_COMP_SYMB),
+        "3": ("Símbolos de alta compatibilidad", HIGH_COMP_SYMB),
         "4": ("Números", DIGITS),
         "5": ("Letras minúsculas", LOWER),
         "6": ("Letras mayúsculas", UPPER),
@@ -42,7 +43,8 @@ def seleccionar_conjuntos(): #Permite al usuario seleccionar los caracteres que 
 
     for _, (desc, charset) in opciones.items():
         while True:
-            respuesta = input(f"¿Desea incluir {desc}? (Y/N):\n ").strip().upper()
+            respuesta = input (f"¿Desea incluir {desc}? (Y/N): ").strip().upper()
+            print("")
             if respuesta in ("Y", "N"):
                 if respuesta == "Y":
                     charsets.append(charset)
@@ -59,10 +61,10 @@ def seleccionar_conjuntos(): #Permite al usuario seleccionar los caracteres que 
 def passgenerator():
     try:
         clear_console()
-        cprint("=== OPCIÓN 2: GENERADOR DE CONTRASEÑAS ===\n", "Y")
+        cprint("=== OPCIÓN 2: GENERADOR DE contraSEÑAS ===\n", "Y")
         
         while True:
-            largo = input("Ingresar el largo de la contraseña a generar (8-18): ")
+            largo = input("Ingresar el largo de la contraseña a generar (12-30): ")
             
             if not largo.isdigit():
                 getpass("\nLo ingresado no es un número, presione ENTER para continuar")
@@ -71,8 +73,8 @@ def passgenerator():
             
             largo = int(largo)
             
-            if largo < 8 or largo > 18:
-                getpass("\nLa contraseña debe tener entre 8 y 18 caracteres, presione ENTER para continuar")
+            if largo < 12 or largo > 30:
+                getpass("\nLa contraseña debe tener entre 12 y 30 caracteres, presione ENTER para continuar")
                 clear_console()
                 continue
 
@@ -84,10 +86,15 @@ def passgenerator():
                 if cumple_requisitos(contra, charsets):
                     break
 
-            print("\nSu contraseña es:", contra)
-            getpass("\nPresione ENTER para volver al menú principal")
-            break  # Salir del ciclo principal
-        
-    except ValueError as e:
-        getpass("\nOcurrió un error, presione ENTER para continuar")
-
+            print("\nSu contraseña es:", end=" "); cprint(contra, "G")
+            analize=input("Desea analizar la contraseña generada? (Y para analizar, otra opcion para salir)").strip().upper()
+            if analize == "Y":
+                passinfo=PasswordInfo
+                analyze_password_props(contra,passinfo)
+                show_password_summary(passinfo)
+            try:
+                getpass("\nPresione ENTER para volver al menú principal.")
+            except KeyboardInterrupt:
+                handle_program_exit()
+    except:
+        handle_task_stop
