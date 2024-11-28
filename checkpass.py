@@ -12,6 +12,24 @@ from modules import passutils
 from modules.utils import clear_console, cprint, format_time, handle_task_stop, handle_program_exit, show_header
 from modules.constants import DEFAULT_DEVICE_HASHRATE, PASSWORD_SECURITY_LIMITS
 
+def show_password():
+    """
+    Solicita al usuario que indique si desea mostrar la contraseña en pantalla.
+
+    Returns:
+        None | bool: None si la respuesta no es válida, True si el usuario elige mostrar la contraseña,
+                     False si el usuario elige no mostrar la contraseña.
+    """
+
+    show_password = input("Mostrar contraseña en pantalla? [N/s]: ")
+    if show_password not in ["", "s", "S", "n", "N"]:
+        getpass("\nOpción incorrecta, presione ENTER para continuar.")
+        return None
+    elif show_password in ["s", "S"]:
+        return True
+    else:
+        return False
+
 def analyze_password_props(password, passinfo):
     """
     Analiza las propiedades de una contraseña y actualiza la información en `passinfo`.
@@ -98,9 +116,10 @@ def calc_password_combinations(passinfo):
         len(passutils.LOWER) if passinfo.lower else 0,
         len(passutils.UPPER) if passinfo.upper else 0,
         len(passutils.HIGH_COMP_SYMB) if passinfo.highcompsymb else 0,
-        len(passutils.MED_COMP_SYMB) if passinfo.medcompsymb else 0,
-        len(passutils.LOW_COMP_SYMB) if passinfo.lowcompsymb else 0,
+        len(passutils.HIGH_COMP_SYMB) + len(passutils.MED_COMP_SYMB) if passinfo.medcompsymb else 0,
+        len(passutils.HIGH_COMP_SYMB) + len(passutils.MED_COMP_SYMB) + len(passutils.LOW_COMP_SYMB) if passinfo.lowcompsymb else 0,
     ]
+
     return sum(charsets) ** passinfo.length
 
 def get_bruteforce_time(pass_combinations, hashrate):
@@ -216,20 +235,28 @@ def checkpass():
     """
 
     try:
+        password_visible = None
+        while password_visible == None:
+            show_header("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
+            print("Este módulo le permitirá analizar la seguridad de su contraseña")
+            print("contra ataques de fuerza bruta.\n")
+            print("La contraseña no será mostrada en pantalla a menos que así lo desee.\n")
+            password_visible = show_password()
+
         password = None
         while password == None:
             show_header("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
-            password = passutils.input_password()
+            password = passutils.input_password(password_visible)
         
         passinfo = passutils.PasswordInfo()
         analyze_password_props(password, passinfo)
 
-        conf = None
-        while conf == None:
+        confirmation = None
+        while confirmation == None:
             show_header("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
-            conf = confirm_bruteforce_analysis(passinfo)
+            confirmation = confirm_bruteforce_analysis(passinfo)
 
-        if conf:
+        if confirmation:
             num_passwords = calc_password_combinations(passinfo)
             pass_breaktime = get_bruteforce_time(num_passwords, DEFAULT_DEVICE_HASHRATE)
             breaktime_text = format_time(pass_breaktime)

@@ -7,6 +7,9 @@ y una clase para almacenar información sobre su seguridad.
 """
 
 from getpass import getpass
+# pip install git+https://github.com/binbash23/pwinput.git
+# Para resolver el uso de Ctrl+C (https://github.com/asweigart/pwinput/pull/7)
+from pwinput import pwinput
 
 # Conjuntos de caracteres clasificados por compatibilidad
 HIGH_COMP_SYMB = set([
@@ -61,25 +64,32 @@ def is_password_vaild(password):
     """
     return all(char in VALID_PASS_CHARS for char in password)
 
-def input_password():
+def input_password(show_password = False):
     """
-    Solicita al usuario una contraseña válida y la confirma.
+    Solicita al usuario una contraseña válida y en caso de ser necesario, la confirma.
+
+    Args:
+        show_password (bool): Determina si la contraseña será visible mientras se ingresa.
 
     Returns:
         None | str: None si la contraseña no es válida, contraseña si es válida y confirmada.
     """
 
-    password = getpass("Ingrese la contraseña: ")
+    if show_password == False:
+        password = pwinput("Ingrese la contraseña: ", "*")
+    else:
+        password = input("Ingrese la contraseña: ")
 
     error_message = validate_password(password)
     if error_message:
         getpass(f"\n{error_message} presione ENTER para continuar.")
         return None
 
-    repeat_pass = getpass("Ingrese nuevamente la contraseña: ")
-    if password != repeat_pass:
-        getpass("\nLas contraseñas no coinciden, presione ENTER para continuar.")
-        return None
+    if show_password == False:
+        repeat_pass = pwinput("Ingrese nuevamente la contraseña: ", "*")
+        if password != repeat_pass:
+            getpass("\nLas contraseñas no coinciden, presione ENTER para continuar.")
+            return None
 
     return password
 
