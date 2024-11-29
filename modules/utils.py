@@ -31,7 +31,7 @@ def handle_program_exit():
 
     Muestra un mensaje en rojo indicando que el programa ha sido interrumpido y termina la ejecución.
     """
-    cprint(f"\n\n[*] Programa interrumpido, saliendo de {APP_NAME} manera controlada.\n", "R")
+    cprint(f"\n\n[*] Programa interrumpido, saliendo de {APP_NAME} de manera controlada.\n", "R")
     sys.exit(0)
 
 def clear_console():

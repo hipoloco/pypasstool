@@ -29,7 +29,7 @@ def menu():
         elif opcion == "3":
             hashpass.hashpass()
         elif opcion == "4":
-            cprint(f"\n[*] Saliendo de {APP_NAME}.\n", "G1")
+            cprint(f"\n[*] Saliendo de {APP_NAME}.\n", "B")
             sys.exit(0)
         else:
             getpass("\nOpción incorrecta, presione ENTER para continuar.")
