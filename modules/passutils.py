@@ -155,7 +155,7 @@ class PasswordInfo:
         security (int): Nivel de seguridad asignado a la contraseña.
     """
     def __init__(self):
-        self.length = 0
+        self.length = None
         self.digits = None
         self.lower = None
         self.upper = None

@@ -21,11 +21,11 @@ def show_password():
                      False si el usuario elige no mostrar la contraseña.
     """
 
-    show_password = input("Mostrar contraseña en pantalla? [N/s]: ")
-    if show_password not in ["", "s", "S", "n", "N"]:
+    show_password = input("Mostrar contraseña en pantalla? [S/N]: ")
+    if show_password.lower() not in ["s", "n"]:
         getpass("\nOpción incorrecta, presione ENTER para continuar.")
         return None
-    elif show_password in ["s", "S"]:
+    elif show_password.lower() == "s":
         return True
     else:
         return False
@@ -64,11 +64,11 @@ def confirm_bruteforce_analysis(passinfo):
     """
 
     passutils.show_password_summary(passinfo)
-    confirmation = input("\nDesea verificar la seguridad de su contraseña? [S/n]: ")
-    if confirmation not in ["", "s", "S", "n", "N"]:
+    confirmation = input("\nDesea verificar la seguridad de su contraseña? [S/N]: ")
+    if confirmation.lower() not in ["s", "n"]:
         getpass("\nOpción incorrecta, presione ENTER para continuar.")
         return None
-    if confirmation in ["n", "N"]:
+    if confirmation.lower() == "n":
         getpass("\nVerificación cancelada, presione ENTER para volver al menú principal.")
         return False
     
