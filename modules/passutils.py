@@ -11,6 +11,8 @@ from getpass import getpass
 # Para resolver el uso de Ctrl+C (https://github.com/asweigart/pwinput/pull/7)
 from pwinput import pwinput # type: ignore
 
+from modules.utils import cprint
+
 # Conjuntos de caracteres clasificados por compatibilidad
 HIGH_COMP_SYMB = set([
     "!", "#", "$", "%", "&", "*", "@", "^"
@@ -112,6 +114,32 @@ def validate_password(password):
         return "La contraseña contiene caracteres inválidos,"
     return None
 
+def show_password_summary(passinfo):
+    """
+    Muestra un resumen de las propiedades de la contraseña.
+
+    Args:
+        passinfo (PasswordInfo): Objeto con las propiedades de la contraseña.
+    """
+
+    print("Resumen de la contraseña:")
+    cprint("[*] ", "Y", ""); print("Longitud: ", end=""); cprint(str(passinfo.length), "R") if passinfo.length <= 10 else cprint(str(passinfo.length), "G")
+    cprint("[*] ", "Y", ""); print("Tiene números: ", end=""); cprint("Si", "G") if passinfo.digits else cprint("No", "R")
+    cprint("[*] ", "Y", ""); print("Tiene letras minúsculas: ", end=""); cprint("Si", "G") if passinfo.lower else cprint("No", "R")
+    cprint("[*] ", "Y", ""); print("Tiene letras mayúsculas: ", end=""); cprint("Si", "G") if passinfo.upper else cprint("No", "R")
+    cprint("[*] ", "Y", ""); print("Tiene símbolos: ", end="")
+    if passinfo.highcompsymb or passinfo.medcompsymb or passinfo.lowcompsymb:
+        cprint("Si", "G")
+        cprint("[*] ", "Y", ""); print("Compatibilidad de símbolos utilzados: ", end="")
+        if passinfo.lowcompsymb:
+            cprint("Baja", "R")
+        elif passinfo.medcompsymb:
+            cprint("Media", "C")
+        else:
+            cprint("Alta", "G")
+    else:
+        cprint("No", "R")
+
 class PasswordInfo:
     """
     Clase que almacena información sobre las propiedades de una contraseña.
@@ -128,10 +156,10 @@ class PasswordInfo:
     """
     def __init__(self):
         self.length = 0
-        self.digits = False
-        self.lower = False
-        self.upper = False
-        self.highcompsymb = False
-        self.medcompsymb = False
-        self.lowcompsymb = False
-        self.security = 0
+        self.digits = None
+        self.lower = None
+        self.upper = None
+        self.highcompsymb = None
+        self.medcompsymb = None
+        self.lowcompsymb = None
+        self.security = None

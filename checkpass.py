@@ -52,32 +52,6 @@ def analyze_password_props(password, passinfo):
     for key, chartype in chartypes.items():
         setattr(passinfo, key, passutils.password_has_chartype(password, chartype))
 
-def show_password_summary(passinfo):
-    """
-    Muestra un resumen de las propiedades de la contraseña.
-
-    Args:
-        passinfo (PasswordInfo): Objeto con las propiedades de la contraseña.
-    """
-
-    print("Resumen de la contraseña ingresada:")
-    cprint("[*] ", "Y", ""); print("Longitud: ", end=""); cprint(str(passinfo.length), "R") if passinfo.length <= 10 else cprint(str(passinfo.length), "G")
-    cprint("[*] ", "Y", ""); print("Tiene números: ", end=""); cprint("Si", "G") if passinfo.digits else cprint("No", "R")
-    cprint("[*] ", "Y", ""); print("Tiene letras minúsculas: ", end=""); cprint("Si", "G") if passinfo.lower else cprint("No", "R")
-    cprint("[*] ", "Y", ""); print("Tiene letras mayúsculas: ", end=""); cprint("Si", "G") if passinfo.upper else cprint("No", "R")
-    cprint("[*] ", "Y", ""); print("Tiene símbolos: ", end="")
-    if passinfo.highcompsymb or passinfo.medcompsymb or passinfo.lowcompsymb:
-        cprint("Si", "G")
-        cprint("[*] ", "Y", ""); print("Compatibilidad de símbolos utilzados: ", end="")
-        if passinfo.lowcompsymb:
-            cprint("Baja", "R")
-        elif passinfo.medcompsymb:
-            cprint("Media", "C")
-        else:
-            cprint("Alta", "G")
-    else:
-        cprint("No", "R")
-
 def confirm_bruteforce_analysis(passinfo):
     """
     Confirma si el usuario desea continuar con el análisis de seguridad por fuerza bruta.
@@ -89,7 +63,7 @@ def confirm_bruteforce_analysis(passinfo):
        None | bool: None si la respuesta no es válida, True si el usuario confirma, False si cancela.
     """
 
-    show_password_summary(passinfo)
+    passutils.show_password_summary(passinfo)
     confirmation = input("\nDesea verificar la seguridad de su contraseña? [S/n]: ")
     if confirmation not in ["", "s", "S", "n", "N"]:
         getpass("\nOpción incorrecta, presione ENTER para continuar.")
