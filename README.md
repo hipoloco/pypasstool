@@ -3,6 +3,8 @@
 
 Este proyecto es una herramienta interactiva para analizar, generar y hashear contraseñas, diseñada para proporcionar una experiencia segura y completa en la gestión de contraseñas.
 
+**URL del proyecto:** [https://github.com/hipoloco/pypasstool](https://github.com/hipoloco/pypasstool)
+
 ## Funcionalidades
 
 1. **Analizador de Contraseñas**: Permite evaluar la seguridad de una contraseña basada en:
@@ -28,8 +30,8 @@ Este proyecto es una herramienta interactiva para analizar, generar y hashear co
 
 1. Clonar el repositorio:
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd <NOMBRE_DEL_REPOSITORIO>
+   git clone https://github.com/hipoloco/pypasstool
+   cd pypasstool
    ```
 
 2. Instalar las dependencias:
@@ -84,6 +86,16 @@ Listado en `requirements.txt`:
   ```plaintext
   git+https://github.com/binbash23/pwinput.git
   ```
+
+## Colaboradores
+
+- **hipoloco**: [https://github.com/hipoloco](https://github.com/hipoloco)
+- **Kabuta14**: [https://github.com/Kabua14](https://github.com/Kabua14)
+- **CasTetas**: [https://github.com/CasTetas](https://github.com/CasTetas)
+
+## Nota
+
+Este proyecto fue realizado como obligatorio de la materia "Introducción a la programación" del primer semestre del Tecnólogo en Ciberseguridad de CETP-UTU.
 
 ## Contribuciones
 
