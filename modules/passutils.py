@@ -10,7 +10,7 @@ contraseña y una clase para almacenar información sobre contraseñas.
 from getpass import getpass
 # pip install git+https://github.com/binbash23/pwinput.git
 # Para resolver el uso de Ctrl+C (https://github.com/asweigart/pwinput/pull/7)
-from pwinput import pwinput # type: ignore
+from pwinput import pwinput
 
 from modules.utils import cprint
 
