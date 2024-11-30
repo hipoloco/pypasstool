@@ -134,3 +134,7 @@ def show_header(message):
 
     clear_console()
     cprint(message, "Y")
+
+# Bloque para prevenir la ejecución directa del módulo.
+if __name__ == "__main__":
+    cprint("\n[*] Este módulo no puede ser ejecutado directamente.\n", "R")

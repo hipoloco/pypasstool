@@ -71,3 +71,7 @@ def hashpass():
 
     except KeyboardInterrupt:
         handle_task_stop()
+
+# Bloque para prevenir la ejecución directa del módulo.
+if __name__ == "__main__":
+    cprint("\n[*] Este módulo no puede ser ejecutado directamente.\n", "R")
