@@ -2,8 +2,9 @@
 utils.py
 
 Este módulo proporciona funciones utilitarias para gestionar señales, limpiar la pantalla, 
-imprimir con colores personalizados y convertir segundos a unidades de tiempo legibles. 
-Estas funciones son de uso común en la aplicación para mejorar la interacción del usuario.
+imprimir cabezeras, imprimir con colores personalizados y convertir segundos a unidades 
+de tiempo legibles. Estas funciones son de uso común en la aplicación para mejorar
+la interacción del usuario.
 """
 
 import os
@@ -130,6 +131,9 @@ def format_time(seconds):
 def show_header(message):
     """
     Limpia la consola y muestra el encabezado del analizador de contraseñas.
+
+    Args:
+        message (str): Mensaje a mostrar en el encabezado.
     """
 
     clear_console()
