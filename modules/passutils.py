@@ -3,7 +3,8 @@ passutils.py
 
 Este módulo contiene utilidades relacionadas con el análisis y validación de contraseñas.
 Proporciona constantes para clasificar tipos de caracteres, funciones para analizar las 
-características de una contraseña,  y una clase para almacenar información sobre su seguridad.
+características de una contraseña, para mostrar un resumen de las características de la
+contraseña y una clase para almacenar información sobre contraseñas.
 """
 
 from getpass import getpass
