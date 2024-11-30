@@ -54,7 +54,8 @@ def analyze_password_props(password, passinfo):
 
 def confirm_bruteforce_analysis(passinfo):
     """
-    Confirma si el usuario desea continuar con el análisis de seguridad por fuerza bruta.
+    Confirma si el usuario desea continuar con el análisis de seguridad de la contraseña
+    por fuerza bruta.
 
     Args:
         passinfo (PasswordInfo): Objeto con las propiedades de la contraseña.
@@ -110,7 +111,7 @@ def get_bruteforce_time(pass_combinations, hashrate):
 
     return pass_combinations/hashrate
 
-def set_password_secururity(bruteforce_time, passinfo):
+def set_password_security(bruteforce_time, passinfo):
     """
     Determina el nivel de seguridad de la contraseña basado en el tiempo de ruptura estimado.
 
@@ -234,7 +235,7 @@ def checkpass():
             num_passwords = calc_password_combinations(passinfo)
             pass_breaktime = get_bruteforce_time(num_passwords, DEFAULT_DEVICE_HASHRATE)
             breaktime_text = format_time(pass_breaktime)
-            set_password_secururity(pass_breaktime, passinfo)
+            set_password_security(pass_breaktime, passinfo)
             breaktime_text_color = get_security_color(passinfo.security)
             improvements_list = password_improvements(passinfo)
 
