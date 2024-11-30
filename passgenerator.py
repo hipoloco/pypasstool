@@ -1,54 +1,76 @@
-#import random
+"""
+passgenerator.py
+
+Este módulo permite generar contraseñas basadas en los requisitos definidos por el usuario.
+El usuario puede especificar el largo de la contraseña, los conjuntos de caracteres permitidos 
+(números, letras mayúsculas, letras minúsculas y símbolos), y el nivel de compatibilidad de los
+símbolos.
+"""
+
 import time
 from getpass import getpass
 
-from modules.passutils import LOW_COMP_SYMB, MED_COMP_SYMB, HIGH_COMP_SYMB, DIGITS, LOWER, UPPER, PasswordInfo, show_password_summary
-from modules.utils import clear_console, cprint,handle_task_stop,handle_program_exit, show_header
+from modules import passutils
+from modules.utils import cprint, handle_task_stop, handle_program_exit, show_header
 
-def password_generator(length, charset_list): #la funcion genera una contraseña con el largo que indica el usuario y los sets de caracteres elegidos
+def password_generator(length, charset_list):
+    """
+    Genera una contraseña basada en el largo especificado y los conjuntos de caracteres seleccionados.
 
-    if length <= 0:
-        print("El largo de la contraseña debe ser mayor a 0")
-        return ""
+    Args:
+        length (int): Largo de la contraseña a generar.
+        charset_list (list[list[str]]): Lista de conjuntos de caracteres permitidos.
 
-    #allchars = []
-    #for charset in charsets:
-    #    allchars += list(charset)
+    Returns:
+        str: Contraseña generada que cumple con los requisitos.
+    """
+
+    # Crear un único string con todos los caracteres permitidos
     allchars = ''.join(''.join(charset) for charset in charset_list)
 
+    # Generar contraseña utilizando un generador pseudoaleatorio basado en tiempo
     password = ""
-    seed = int(time.time() * 1000)  # Usa el tiempo actual como semilla
+    seed = int(time.time() * 1000)  # Usar el tiempo actual como semilla
     for i in range(length):
         seed = (seed * 9301 + 49297) % 233280
         index = seed % len(allchars)
         password += allchars[index]
-    
-    #return password
-    #return ''.join(random.choices(allchars, k=length))
 
+    # Verificar que la contraseña cumpla con los requisitos de todos los conjuntos de caracteres
     if all(any(char in charset for char in password) for charset in charset_list):
         return password
     else:
-        return password_generator(length, charset_list)
-
-#def cumple_requisitos(password, charset_list): #esta funcion verifica que la contraseña generada cumpla con los requisitos de caracteres indicados por el usuario
-#    
-#    return all(any(char in charset for char in password) for charset in charset_list)
+        return password_generator(length, charset_list)  # Intentar nuevamente
 
 def set_password_length():
-    password_length = input("Ingresar el largo de la contraseña a generar (12-30): ") 
+    """
+    Solicita al usuario el largo de la contraseña.
+
+    Returns:
+        None | int: Largo ingresado por el usuario o None si la entrada no es válida.
+    """
+    password_length = input("Ingresar el largo de la contraseña a generar (12-30): ")
     if not password_length.isdigit():
-        getpass("\nLo ingresado no es un número, presione ENTER para continuar")
+        getpass("\nLo ingresado no es un número, presione ENTER para continuar.")
         return None
-    
+
     password_length = int(password_length)
     if password_length < 12 or password_length > 30:
-        getpass("\nLa contraseña debe tener entre 12 y 30 caracteres, presione ENTER para continuar")
+        getpass("\nLa contraseña debe tener entre 12 y 30 caracteres, presione ENTER para continuar.")
         return None
-    
+
     return password_length
 
 def ask_yes_no(question):
+    """
+    Solicita al usuario una respuesta afirmativa o negativa (S/N).
+
+    Args:
+        question (str): Pregunta que se mostrará al usuario.
+
+    Returns:
+        None | bool: True si la respuesta es afirmativa, False si es negativa, None si es inválida.
+    """
     answer = input(f"{question} [S/N]: ")
     if answer.lower() not in ['s', 'n']:
         input("\nLa opción no es válida, presione ENTER para continuar.")
@@ -56,38 +78,48 @@ def ask_yes_no(question):
     return answer.lower() == 's'
 
 def passgenerator():
+    """
+    Punto de entrada principal para el generador de contraseñas.
+
+    Solicita al usuario los requisitos de la contraseña, genera una contraseña segura
+    y la muestra al usuario. Garantiza que la contraseña cumpla con todos los requisitos.
+
+    Maneja interrupciones (Ctrl+C) y permite salir del programa de manera controlada.
+    """
     try:
-        passinfo = PasswordInfo()
+        passinfo = passutils.PasswordInfo()
         finishPassInfo = False
-        while finishPassInfo == False:
+        while not finishPassInfo:
             show_header("=== OPCIÓN 2: GENERADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
 
-            if passinfo.length == None:
+            # Solicitar el largo de la contraseña
+            if passinfo.length is None:
                 passinfo.length = set_password_length()
-                if passinfo.length == None:
+                if passinfo.length is None:
                     continue
 
+            # Solicitar requisitos de la contraseña
             options = [
                 ('digits', 'La contraseña tendrá números?'),
                 ('lower', 'La contraseña tendrá letras minúsculas?'),
                 ('upper', 'La contraseña tendrá letras mayúsculas?')
             ]
 
-            invalid_option = False
-
+            invalid_option = False # Flag para determinar si es necesario iterar nuevamente en el bucle principal
             for attr, question in options:
-                if getattr(passinfo, attr) == None:
+                if getattr(passinfo, attr) is None:
                     result = ask_yes_no(question)
-                    if result == None:
+                    if result is None:
                         invalid_option = True
-                        break  # Sale del bucle for y vuelve al inicio del while
+                        break
                     setattr(passinfo, attr, result)
-                    invalid_option = False
 
+            # Si hubo un break en el bucle for anterior, vuelvo a iterar sobre el bucle principal
             if invalid_option:
                 continue
 
-            if passinfo.highcompsymb == None and passinfo.medcompsymb == None and passinfo.lowcompsymb == None:
+            # Preguntar sobre símbolos y su compatibilidad
+            if passinfo.highcompsymb is None and passinfo.medcompsymb is None and passinfo.lowcompsymb is None:
                 has_symbols = input("La contraseña tendrá símbolos? [S/N]: ")
                 if has_symbols.lower() not in ["s", "n"]:
                     getpass("\nLa opción no es válida, presione ENTER para continuar.")
@@ -96,7 +128,6 @@ def passgenerator():
                     passinfo.highcompsymb = False
                     passinfo.medcompsymb = False
                     passinfo.lowcompsymb = False
-
                     finishPassInfo = True
                 else:
                     print("\nNivel de compatibilidad de símbolos:")
@@ -123,35 +154,25 @@ def passgenerator():
 
                     finishPassInfo = True
 
+        # Construir la lista de conjuntos de caracteres seleccionados
         all_charsets = [
-            DIGITS if passinfo.digits else None,
-            LOWER if passinfo.lower else None,
-            UPPER if passinfo.upper else None,
-            HIGH_COMP_SYMB if passinfo.highcompsymb else None,
-            MED_COMP_SYMB if passinfo.medcompsymb else None,
-            LOW_COMP_SYMB if passinfo.lowcompsymb else None,
+            passutils.DIGITS if passinfo.digits else None,
+            passutils.LOWER if passinfo.lower else None,
+            passutils.UPPER if passinfo.upper else None,
+            passutils.HIGH_COMP_SYMB if passinfo.highcompsymb else None,
+            passutils.MED_COMP_SYMB if passinfo.medcompsymb else None,
+            passutils.LOW_COMP_SYMB if passinfo.lowcompsymb else None,
         ]
-
         selected_charsets = [charset for charset in all_charsets if charset is not None]
 
-        if len(selected_charsets) == 0:
-            selected_charsets = [DIGITS, UPPER, LOWER]
-            passinfo.digits = True
-            passinfo.lower = True
-            passinfo.upper = True
-
-        #while True:
-        #    password = password_generator(password_length, selected_charsets)
-        #    if cumple_requisitos(password, selected_charsets):
-        #        break
-
+        # Generar contraseña
         password = password_generator(passinfo.length, selected_charsets)
 
+        # Mostrar el resultado
         show_header("=== OPCIÓN 2: GENERADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
-
-        show_password_summary(passinfo)
+        passutils.show_password_summary(passinfo)
         print("\nLa contraseña generada es: ", end=""); cprint(password, "G")
-            
+
         try:
             getpass("\nPresione ENTER para volver al menú principal.")
         except KeyboardInterrupt:
