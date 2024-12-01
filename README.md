@@ -91,7 +91,7 @@ Listado en `requirements.txt`:
 
 - **hipoloco**: [https://github.com/hipoloco](https://github.com/hipoloco)
 - **Kabuta14**: [https://github.com/Kabua14](https://github.com/Kabua14)
-- **CasTetas**: [https://github.com/CasTetas](https://github.com/CasTetas)
+- **CasTeo7**: [https://github.com/CasTeo7](https://github.com/CasTeo7)
 
 ## Nota
 
