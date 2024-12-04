@@ -46,7 +46,7 @@ Este proyecto es una herramienta interactiva para analizar, generar y hashear co
 
 ## Uso
 
-Ejecuta el archivo `main.py` para iniciar la aplicación. Se mostrará un menú interactivo con las siguientes opciones:
+Ejecuta el archivo `pypasstool/main.py` para iniciar la aplicación. Se mostrará un menú interactivo con las siguientes opciones:
 
 1. **Analizar Contraseña**:
    - Evalúa la seguridad de una contraseña ingresada.
@@ -59,21 +59,21 @@ Ejecuta el archivo `main.py` para iniciar la aplicación. Se mostrará un menú 
 
 Ejemplo de ejecución en Linux/MacOS:
 ```bash
-python main.py
+python pypasstool/main.py
 ```
 
 Ejemplo de ejecución en Windows:
 ```cmd
-python main.py
+python pypasstool/main.py
 ```
 
 ## Archivos y Estructura
 
 ### Principales Archivos
-- **`main.py`**: Punto de entrada principal que controla el flujo de la aplicación.
-- **`checkpass.py`**: Módulo para analizar la seguridad de contraseñas.
-- **`passgenerator.py`**: Módulo para generar contraseñas seguras.
-- **`hashpass.py`**: Módulo para hashear contraseñas.
+- **`pypasstool/main.py`**: Punto de entrada principal que controla el flujo de la aplicación.
+- **`pypasstool/checkpass.py`**: Módulo para analizar la seguridad de contraseñas.
+- **`pypasstool/passgenerator.py`**: Módulo para generar contraseñas seguras.
+- **`pypasstool/hashpass.py`**: Módulo para hashear contraseñas.
 
 ### Scripts de Instalación
 - **`install_dependencies.sh`** (Linux/MacOS): Script para instalar las dependencias desde `requirements.txt`.
