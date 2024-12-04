@@ -8,9 +8,9 @@ de seguridad.
 
 from getpass import getpass
 
-from modules import passutils
-from modules.utils import clear_console, cprint, format_time, handle_task_stop, handle_program_exit, show_header
-from modules.constants import DEFAULT_DEVICE_HASHRATE, PASSWORD_SECURITY_LIMITS
+from utils import passutils
+from utils.utils import clear_console, cprint, format_time, handle_task_stop, handle_program_exit, show_header
+from utils.constants import DEFAULT_DEVICE_HASHRATE, PASSWORD_SECURITY_LIMITS
 
 def show_password():
     """

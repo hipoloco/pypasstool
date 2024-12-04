@@ -10,8 +10,8 @@ import bcrypt
 
 from getpass import getpass
 
-from modules import passutils
-from modules.utils import show_header, cprint, handle_program_exit, handle_task_stop
+from utils import passutils
+from utils.utils import show_header, cprint, handle_program_exit, handle_task_stop
 
 def select_hash_algorithm():
     """

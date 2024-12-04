@@ -12,7 +12,7 @@ from getpass import getpass
 # Para resolver el uso de Ctrl+C (https://github.com/asweigart/pwinput/pull/7)
 from pwinput import pwinput
 
-from modules.utils import cprint
+from utils.utils import cprint
 
 # Conjuntos de caracteres clasificados por compatibilidad
 HIGH_COMP_SYMB = set([

@@ -10,8 +10,8 @@ símbolos.
 import time
 from getpass import getpass
 
-from modules import passutils
-from modules.utils import cprint, handle_task_stop, handle_program_exit, show_header
+from utils import passutils
+from utils.utils import cprint, handle_task_stop, handle_program_exit, show_header
 
 def password_generator(length, charset_list):
     """

@@ -11,7 +11,7 @@ import os
 import sys
 from getpass import getpass
 
-from modules.constants import ANSI_COLORS, APP_NAME
+from utils.constants import ANSI_COLORS, APP_NAME
 
 def handle_task_stop():
     """
