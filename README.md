@@ -1,5 +1,5 @@
 
-# pypastool: gestor de contraseñas
+# pypasstool: gestor de contraseñas
 
 Este proyecto es una herramienta interactiva para analizar, generar y hashear contraseñas, diseñada para proporcionar una experiencia segura y completa en la gestión de contraseñas.
 
@@ -64,7 +64,7 @@ python pypasstool/main.py
 
 Ejemplo de ejecución en Windows:
 ```cmd
-python pypasstool/main.py
+python pypasstool\main.py
 ```
 
 ## Archivos y Estructura
