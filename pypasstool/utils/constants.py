@@ -9,6 +9,9 @@ Incluye configuraciones generales, constantes de color, valores de hashrate para
 APP_NAME = "pypasstool"
 APP_VER = "1.0.0"
 
+# Nombre de la base de datos SQLite
+DATABASE_NAME = "pypasstool.db"
+
 # Constantes de colores para uso en salida de consola con la función cprint
 ANSI_COLORS = {
     "R": "\033[31m",
@@ -29,11 +32,11 @@ HASHRATES_RTX4090 = {
 
 # Diccionario para agregar otros dispositivos en el futuro
 DEVICE_HASHRATES = {
-    "RTX4090": HASHRATES_RTX4090
+    "RTX 4090": HASHRATES_RTX4090
 }
 
 # Hasrate por defecto para calcular tiempos de ruptura de contraseñas
-DEFAULT_DEVICE_HASHRATE = DEVICE_HASHRATES["RTX4090"]["MD5"]*12 # Simula 12 dispositivos RTX 4090
+DEFAULT_DEVICE_HASHRATE = DEVICE_HASHRATES["RTX 4090"]["MD5"]*12 # Simula 12 dispositivos RTX 4090
 
 # Límites en segundos para clasificar la seguridad de una contraseña (ruptura por fuerza bruta)
 # Categorías:
