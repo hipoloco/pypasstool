@@ -5,13 +5,21 @@ import checkpass, passgenerator, hashpass
 from utils.constants import APP_NAME, APP_VER
 from utils.utils import clear_console, cprint, handle_program_exit
 
-from db import connnection
+from scripts.init_db import create_db
+from scripts.seed_db import seed_db
 
 #signal.signal(signal.SIGINT, signal_handler_exit)
 
 def init_app():
-    conn = connnection.get_db_connection()
-    return conn
+#    conn = connnection.get_db_connection()
+#    return conn
+    if not create_db():
+        cprint("\n[!] Error al crear la base de datos.\n", "R")
+        sys.exit(1)
+    
+    if not seed_db():
+        cprint("\n[!] Error al poblar la base de datos.\n", "R")
+        sys.exit(1)
 
 def mostrar_menu():
     clear_console()

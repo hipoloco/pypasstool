@@ -10,7 +10,7 @@ from getpass import getpass
 
 from utils import passutils
 from utils.utils import clear_console, cprint, format_time, handle_task_stop, handle_program_exit, show_header
-from utils.constants import DEFAULT_DEVICE_HASHRATE, PASSWORD_SECURITY_LIMITS
+from utils.constants import PASSWORD_SECURITY_LIMITS
 
 def show_password():
     """

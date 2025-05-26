@@ -23,20 +23,16 @@ ANSI_COLORS = {
     "RST": "\033[0m"
 }
 
-# Hasrate (velocidades de procesamiento) para dispositivos específicos
-HASHRATES_RTX4090 = {
-    "BCRYPT": 1.84e5,
-    "MD5": 1.641e11,
-    "SHA-1": 5.06387e10
+DEVICES = {
+    "RTX 4090": {
+        "dev_name": "RTX 4090",
+        "hashrates": {
+            "BCRYPT": 1.84e5,
+            "MD5": 1.641e11,
+            "SHA-1": 5.06387e10
+        }
+    }
 }
-
-# Diccionario para agregar otros dispositivos en el futuro
-DEVICE_HASHRATES = {
-    "RTX 4090": HASHRATES_RTX4090
-}
-
-# Hasrate por defecto para calcular tiempos de ruptura de contraseñas
-DEFAULT_DEVICE_HASHRATE = DEVICE_HASHRATES["RTX 4090"]["MD5"]*12 # Simula 12 dispositivos RTX 4090
 
 # Límites en segundos para clasificar la seguridad de una contraseña (ruptura por fuerza bruta)
 # Categorías:
