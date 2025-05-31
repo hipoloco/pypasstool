@@ -1,4 +1,4 @@
-import signal, sys
+import signal, sys, os, sqlite3
 from getpass import getpass
 
 import checkpass, passgenerator, hashpass
@@ -11,15 +11,9 @@ from scripts.seed_db import seed_db
 #signal.signal(signal.SIGINT, signal_handler_exit)
 
 def init_app():
-#    conn = connnection.get_db_connection()
-#    return conn
-    if not create_db():
-        cprint("\n[!] Error al crear la base de datos.\n", "R")
-        sys.exit(1)
-    
-    if not seed_db():
-        cprint("\n[!] Error al poblar la base de datos.\n", "R")
-        sys.exit(1)
+    db_conn = create_db()
+    seed_db(db_conn)
+    return db_conn
 
 def mostrar_menu():
     clear_console()
@@ -32,24 +26,25 @@ def mostrar_menu():
     opcion = input("Seleccione una opción: ")
     return opcion
 
-def menu():
+def menu(db_conn):
     while True:
         opcion = mostrar_menu()
 
         if opcion == "1":
-            checkpass.checkpass()
+            checkpass.checkpass(db_conn)
         elif opcion == "2":
-            passgenerator.passgenerator()
+            passgenerator.passgenerator(db_conn)
         elif opcion == "3":
-            hashpass.hashpass()
+            hashpass.hashpass(db_conn)
         elif opcion == "4":
             cprint(f"\n[*] Saliendo de {APP_NAME}.\n", "G")
+            db_conn.close()
             sys.exit(0)
         else:
             getpass("\nOpción incorrecta, presione ENTER para continuar.")
 
 try:
-    db_connection = init_app()
-    menu()
+    db_conn = init_app()
+    menu(db_conn)
 except KeyboardInterrupt:
     handle_program_exit()

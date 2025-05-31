@@ -1,23 +1,24 @@
 import sqlite3
-import os
+import os, sys
 
 from utils.constants import DATABASE_NAME
 from utils.utils import cprint
 
 def create_db(db_path=DATABASE_NAME):
     try:
-        # Conecta (y crea) la base de datos SQLite
-        conn = sqlite3.connect(db_path)
-        create_tables(conn)
-        conn.close()
-    except Exception as e:
-        if conn:
-            conn.close()
+        db_conn = sqlite3.connect(db_path)
+        create_tables(db_conn)
+    except sqlite3.Error as e:
+        if db_conn:
+            db_conn.close()
         if os.path.exists(db_path):
+            cprint(f"\n[!] Error inesperado al crear la base de datos.\n", "R")
             os.remove(db_path)
-        return False
+        else:
+            cprint("\n[!] No se pudo crear el archivo de base de datos (permiso denegado o ruta inválida).\n", "R")
+        sys.exit(1)
 
-    return True
+    return db_conn
 
 def create_tables(db_conn):
     cursor = db_conn.cursor()

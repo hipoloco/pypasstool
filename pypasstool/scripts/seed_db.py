@@ -1,33 +1,27 @@
-import os
+import os, sys
 import sqlite3
 
-from utils.constants import DATABASE_NAME, DEVICES
+from utils.constants import DEVICES
 from utils.utils import cprint
 
-def seed_db(db_path=DATABASE_NAME):
+def seed_db(db_conn):
     """
     Inserta los dispositivos y algoritmos de hash en la base de datos.
     """
-    if os.path.exists(db_path):
-        try:
-            conn = sqlite3.connect(db_path)
-            seed_devices(conn)
-            seed_hash_algorithms(conn)
-            seed_device_hashrates(conn)
-            conn.commit()
-            exit_value = True
-        except Exception as e:
-            print(f"Error al sembrar la base de datos: {e}")
-            conn.rollback()
-            exit_value = False
-        finally:
-            if conn:
-                conn.close()
-            return exit_value
-
-    else:
-        print(f"La base de datos {db_path} no existe. Asegúrate de crearla primero.")
-        return False
+    try:
+        seed_devices(db_conn)
+        seed_hash_algorithms(db_conn)
+        seed_device_hashrates(db_conn)
+        db_conn.commit()
+        exit_value = True
+    except Exception as e:
+        cprint(f"\n[!] Error inesperado al poblar la base de datos.\n", "R")
+        db_conn.rollback()
+        exit_value = False
+    finally:
+        if not exit_value:
+            db_conn.close()
+            sys.exit(1)
 
 def seed_devices(db_conn):
     """
