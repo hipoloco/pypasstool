@@ -7,7 +7,7 @@ Incluye configuraciones generales, constantes de color, valores de hashrate para
 
 # Nombre y versión de la aplicación
 APP_NAME = "pypasstool"
-APP_VER = "1.0.0"
+APP_VER = "1.1.0"
 
 # Nombre de la base de datos SQLite
 DATABASE_NAME = "pypasstool.db"
