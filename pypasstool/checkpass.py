@@ -30,6 +30,67 @@ def show_password():
     else:
         return False
 
+def select_bruteforce_device(db_conn):
+    """
+    Permite al usuario elegir un dispositivo de la tabla devices en la base de datos.
+
+    Args:
+        db_conn: Conexión a la base de datos.
+
+    Returns:
+        dict: None si la respuesta no es válida, o un diccionario con id_dev y dev_name.
+    """
+
+    cursor = db_conn.cursor()
+    cursor.execute("SELECT id_dev, dev_name FROM devices ORDER BY dev_name")
+    devices = cursor.fetchall()
+    
+    print("Seleccione el dispositivo para el análisis de fuerza bruta:\n")
+    for opt, (id_dev, dev_name) in enumerate(devices, 1):
+        print(f"{opt}. {dev_name}")
+
+    option = input("\nDispositivo seleccionado: ")
+    if option.isdigit() and 1 <= int(option) <= len(devices):
+        id_dev, dev_name = devices[int(option) - 1]
+        return {"id_dev": id_dev, "dev_name": dev_name}
+    else:
+        getpass("\nOpción incorrecta, presione ENTER para continuar.")
+        return None
+
+def select_device_hash(db_conn, id_dev):
+    """
+    Permite al usuario elegir un algoritmo de hash disponible para el dispositivo seleccionado
+    y retorna el valor de hashes por segundo (hashrate) correspondiente.
+
+    Args:
+        db_conn: Conexión a la base de datos.
+        id_dev (int): ID del dispositivo seleccionado.
+
+    Returns:
+        dict | None: Diccionario con id_algo y device_hashrate, o None si la opción es inválida.
+    """
+    cursor = db_conn.cursor()
+    cursor.execute("""
+        SELECT ha.id_algo, ha.algo_name, dhr.hashrate
+        FROM hash_algorithms ha
+        JOIN device_hashrate dhr ON ha.id_algo = dhr.id_algo
+        WHERE dhr.id_dev = ?
+        ORDER BY ha.algo_name
+    """, (id_dev,))
+    hashes = cursor.fetchall()
+
+    print("Seleccione el algoritmo de hash para el análisis de fuerza bruta:\n")
+    for hash, (id_algo, algo_name, hashrate) in enumerate(hashes, 1):
+        print(f"{hash}. {algo_name} ({hashrate:.2e} hashes/seg)")
+
+    option = input("\nHash seleccionado: ")
+    if option.isdigit() and 1 <= int(option) <= len(hashes):
+        id_algo, algo_name, hashrate = hashes[int(option) - 1]
+        return {"id_algo": id_algo, "algo_name": algo_name, "device_hashrate": hashrate}
+    else:
+        getpass("\nOpción incorrecta, presione ENTER para continuar.")
+        return None
+
 def analyze_password_props(password, passinfo):
     """
     Analiza las propiedades de una contraseña y actualiza la información en `passinfo`.
@@ -52,7 +113,7 @@ def analyze_password_props(password, passinfo):
     for key, chartype in chartypes.items():
         setattr(passinfo, key, passutils.password_has_chartype(password, chartype))
 
-def confirm_bruteforce_analysis(passinfo):
+def confirm_bruteforce_analysis(passinfo, device, hashrate):
     """
     Confirma si el usuario desea continuar con el análisis de seguridad de la contraseña
     por fuerza bruta.
@@ -65,6 +126,9 @@ def confirm_bruteforce_analysis(passinfo):
     """
 
     passutils.show_password_summary(passinfo)
+    print("\nInformación del análisis de fuerza bruta:")
+    cprint("[*] ", "Y", ""); print(f"Dispositivo seleccionado: {device['dev_name']}")
+    cprint("[*] ", "Y", ""); print(f"Algoritmo de hasheo: {hashrate['algo_name']}")
     confirmation = input("\nDesea verificar la seguridad de su contraseña? [S/N]: ")
     if confirmation.lower() not in ["s", "n"]:
         getpass("\nOpción incorrecta, presione ENTER para continuar.")
@@ -74,6 +138,154 @@ def confirm_bruteforce_analysis(passinfo):
         return False
     
     return True
+
+def find_password_props_id(db_conn, passinfo):
+    """
+    Busca en la tabla password_props un registro que coincida con las propiedades de passinfo.
+
+    Args:
+        db_conn: Conexión a la base de datos.
+        passinfo: Objeto PasswordInfo con las propiedades de la contraseña.
+
+    Returns:
+        int | None: id_pwdprop si existe, None si no se encuentra.
+    """
+    cursor = db_conn.cursor()
+    cursor.execute("""
+        SELECT id_pwdprop FROM password_props
+        WHERE pwd_length = ?
+          AND has_digits = ?
+          AND has_lower = ?
+          AND has_upper = ?
+          AND has_highsymb = ?
+          AND has_midsymb = ?
+          AND has_lowsymb = ?
+        LIMIT 1
+    """, (
+        passinfo.length,
+        int(passinfo.digits),
+        int(passinfo.lower),
+        int(passinfo.upper),
+        int(passinfo.highcompsymb),
+        int(passinfo.medcompsymb),
+        int(passinfo.lowcompsymb)
+    ))
+    row = cursor.fetchone()
+    return row[0] if row else None
+
+def insert_password_props(db_conn, passinfo):
+    """
+    Inserta un nuevo registro en la tabla password_props con las propiedades de la contraseña.
+
+    Args:
+        db_conn: Conexión a la base de datos.
+        passinfo: Objeto PasswordInfo con las propiedades de la contraseña.
+
+    Returns:
+        int: El id_pwdprop recién insertado.
+    """
+    cursor = db_conn.cursor()
+    cursor.execute("""
+        INSERT INTO password_props (
+            pwd_length, has_digits, has_lower, has_upper,
+            has_highsymb, has_midsymb, has_lowsymb
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        passinfo.length,
+        int(passinfo.digits),
+        int(passinfo.lower),
+        int(passinfo.upper),
+        int(passinfo.highcompsymb),
+        int(passinfo.medcompsymb),
+        int(passinfo.lowcompsymb)
+    ))
+    db_conn.commit()
+    return cursor.lastrowid
+
+def find_bruteforce_entry(db_conn, id_pwdprop, id_dev, id_algo):
+    """
+    Busca una coincidencia exacta en la tabla password_bruteforce para los parámetros dados.
+
+    Args:
+        db_conn: Conexión a la base de datos.
+        id_pwdprop (int): ID de las propiedades de la contraseña.
+        id_dev (int): ID del dispositivo.
+        id_algo (int): ID del algoritmo de hash.
+
+    Returns:
+        dict | None: Diccionario con los datos encontrados o None si no existe coincidencia.
+    """
+    cursor = db_conn.cursor()
+    cursor.execute("""
+        SELECT id_pwdprop, id_dev, id_algo, bruteforce_time
+        FROM password_bruteforce
+        WHERE id_pwdprop = ? AND id_dev = ? AND id_algo = ?
+        LIMIT 1
+    """, (id_pwdprop, id_dev, id_algo))
+    row = cursor.fetchone()
+    if row:
+        return {
+            "id_pwdprop": row[0],
+            "id_dev": row[1],
+            "id_algo": row[2],
+            "bruteforce_time": row[3]
+        }
+    else:
+        return None
+
+def insert_bruteforce_entry(db_conn, id_pwdprop, id_dev, id_algo):
+    """
+    Inserta en la tabla password_bruteforce una combinación específica de id_pwdprop, id_dev e id_algo
+    con bruteforce_time en 0.
+
+    Args:
+        db_conn: Conexión a la base de datos.
+        id_pwdprop (int): ID de las propiedades de la contraseña.
+        id_dev (int): ID del dispositivo.
+        id_algo (int): ID del algoritmo de hash.
+    """
+    cursor = db_conn.cursor()
+    cursor.execute("""
+        INSERT OR IGNORE INTO password_bruteforce (id_pwdprop, id_dev, id_algo, bruteforce_time)
+        VALUES (?, ?, ?, 0)
+    """, (id_pwdprop, id_dev, id_algo))
+    db_conn.commit()
+
+def update_bruteforce_time(db_conn, id_pwdprop, id_dev, id_algo, bruteforce_time):
+    """
+    Actualiza el campo bruteforce_time para una combinación específica en password_bruteforce.
+
+    Args:
+        db_conn: Conexión a la base de datos.
+        id_pwdprop (int): ID de las propiedades de la contraseña.
+        id_dev (int): ID del dispositivo.
+        id_algo (int): ID del algoritmo de hash.
+        bruteforce_time (float): Tiempo de ruptura calculado.
+    """
+    cursor = db_conn.cursor()
+    cursor.execute("""
+        UPDATE password_bruteforce
+        SET bruteforce_time = ?
+        WHERE id_pwdprop = ? AND id_dev = ? AND id_algo = ?
+    """, (bruteforce_time, id_pwdprop, id_dev, id_algo))
+    db_conn.commit()
+
+def process_bruteforce_entry(db_conn, passinfo, pwd_props_id, bruteforce_device, device_hashrate):
+    """
+    Inserta o actualiza la entrada de password_bruteforce para la combinación dada y calcula el tiempo de ruptura.
+
+    Args:
+        db_conn: Conexión a la base de datos.
+        passinfo: Objeto PasswordInfo con las propiedades de la contraseña.
+        pwd_props_id (int): ID de las propiedades de la contraseña.
+        bruteforce_device (dict): Diccionario con info del dispositivo seleccionado.
+        device_hashrate (dict): Diccionario con info del hash seleccionado.
+    """
+    insert_bruteforce_entry(db_conn, pwd_props_id, bruteforce_device["id_dev"], device_hashrate["id_algo"])
+    num_passwords = calc_password_combinations(passinfo)
+    pass_breaktime = calc_bruteforce_time(num_passwords, device_hashrate["device_hashrate"])
+    update_bruteforce_time(db_conn, pwd_props_id, bruteforce_device["id_dev"], device_hashrate["id_algo"], pass_breaktime)
+    return pass_breaktime
 
 def calc_password_combinations(passinfo):
     """
@@ -97,7 +309,7 @@ def calc_password_combinations(passinfo):
 
     return sum(charsets) ** passinfo.length
 
-def get_bruteforce_time(pass_combinations, hashrate):
+def calc_bruteforce_time(pass_combinations, hashrate):
     """
     Calcula el tiempo estimado para romper la contraseña mediante fuerza bruta.
 
@@ -199,7 +411,7 @@ def show_bruteforce_summary(improvements_list, breaktime_text, breaktime_text_co
     for improvement in improvements_list:
         cprint("[*] ", "Y", ""); print(improvement)
 
-def checkpass():
+def checkpass(db_conn):
     """
     Punto de entrada principal para el análisis de contraseñas.
 
@@ -223,17 +435,35 @@ def checkpass():
             show_header("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
             password = passutils.input_password(password_visible)
         
+        bruteforce_device = None
+        while bruteforce_device == None:
+            show_header("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
+            bruteforce_device = select_bruteforce_device(db_conn)
+
+        device_hashrate = None
+        while device_hashrate == None:
+            show_header("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
+            device_hashrate = select_device_hash(db_conn, bruteforce_device["id_dev"])
+
         passinfo = passutils.PasswordInfo()
         analyze_password_props(password, passinfo)
 
         confirmation = None
         while confirmation == None:
             show_header("=== OPCIÓN 1: ANALIZADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
-            confirmation = confirm_bruteforce_analysis(passinfo)
+            confirmation = confirm_bruteforce_analysis(passinfo, bruteforce_device, device_hashrate)
 
         if confirmation:
-            num_passwords = calc_password_combinations(passinfo)
-            pass_breaktime = get_bruteforce_time(num_passwords, DEFAULT_DEVICE_HASHRATE)
+            pwd_props_id = find_password_props_id(db_conn, passinfo)
+            if pwd_props_id:
+                bruteforce_entry = find_bruteforce_entry(db_conn, pwd_props_id, bruteforce_device["id_dev"], device_hashrate["id_algo"])
+                if bruteforce_entry:
+                    pass_breaktime = bruteforce_entry["bruteforce_time"]
+                else:
+                    pass_breaktime = process_bruteforce_entry(db_conn, passinfo, pwd_props_id, bruteforce_device, device_hashrate)
+            else:
+                pwd_props_id = insert_password_props(db_conn, passinfo)
+                pass_breaktime = process_bruteforce_entry(db_conn, passinfo, pwd_props_id, bruteforce_device, device_hashrate)
             breaktime_text = format_time(pass_breaktime)
             set_password_security(pass_breaktime, passinfo)
             breaktime_text_color = get_security_color(passinfo.security)

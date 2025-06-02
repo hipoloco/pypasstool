@@ -90,9 +90,8 @@ def create_tables(db_conn):
             id_pwdprop INTEGER NOT NULL,
             id_dev INTEGER NOT NULL,
             id_algo INTEGER NOT NULL,
-            num_devices INTEGER NOT NULL,
             bruteforce_time REAL NOT NULL,
-            PRIMARY KEY(id_pwdprop, id_dev, id_algo, num_devices) CONSTRAINT pk_pwdbrute,
+            PRIMARY KEY(id_pwdprop, id_dev, id_algo) CONSTRAINT pk_pwdbrute,
             FOREIGN KEY(id_pwdprop) REFERENCES password_props(id_pwdprop) CONSTRAINT fk_pwdbrute_idpwdprop,
             FOREIGN KEY(id_dev, id_algo) REFERENCES device_hashrate(id_dev, id_algo) CONSTRAINT fk_pwdbrute_devhashid
         )
