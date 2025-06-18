@@ -319,11 +319,13 @@ def checkpass(db_conn):
             pwd_props_id = find_password_props_id(db_conn, passinfo)
             if not pwd_props_id:
                 pwd_props_id = insert_password_props(db_conn, passinfo)
-            bruteforce_entry = find_bruteforce_entry(db_conn, pwd_props_id, bruteforce_device["id_dev"], device_hashrate["id_algo"])
-            if bruteforce_entry:
-                pass_breaktime = bruteforce_entry["bruteforce_time"]
-            else:
                 pass_breaktime = process_bruteforce_entry(db_conn, passinfo, pwd_props_id, bruteforce_device, device_hashrate)
+            else:
+                bruteforce_entry = find_bruteforce_entry(db_conn, pwd_props_id, bruteforce_device["id_dev"], device_hashrate["id_algo"])
+                if bruteforce_entry:
+                    pass_breaktime = bruteforce_entry["bruteforce_time"]
+                else:
+                    pass_breaktime = process_bruteforce_entry(db_conn, passinfo, pwd_props_id, bruteforce_device, device_hashrate)
             breaktime_text = format_time(pass_breaktime)
             set_password_security(pass_breaktime, passinfo)
             breaktime_text_color = get_security_color(passinfo.security)
