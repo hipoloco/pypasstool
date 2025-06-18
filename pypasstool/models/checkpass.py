@@ -128,7 +128,7 @@ def find_bruteforce_entry(db_conn, id_pwdprop, id_dev, id_algo):
 
     return cursor.fetchone()
 
-def insert_password_bruteforce(db_conn, id_pwdprop, id_dev, id_algo):
+def insert_password_bruteforce(db_conn, id_pwdprop, id_dev, id_algo, bruteforce_time):
     """
     Inserta en la tabla password_bruteforce una combinación específica de id_pwdprop, id_dev e id_algo
     con bruteforce_time en 0.
@@ -138,12 +138,13 @@ def insert_password_bruteforce(db_conn, id_pwdprop, id_dev, id_algo):
         id_pwdprop (int): ID de las propiedades de la contraseña.
         id_dev (int): ID del dispositivo.
         id_algo (int): ID del algoritmo de hash.
+        bruteforce_time (float): Tiempo de ruptura calculado.
     """
     cursor = db_conn.cursor()
     cursor.execute("""
         INSERT OR IGNORE INTO password_bruteforce (id_pwdprop, id_dev, id_algo, bruteforce_time)
-        VALUES (?, ?, ?, 0)
-    """, (id_pwdprop, id_dev, id_algo))
+        VALUES (?, ?, ?, ?)
+    """, (id_pwdprop, id_dev, id_algo, bruteforce_time))
     db_conn.commit()
 
 def update_bruteforce_time(db_conn, id_pwdprop, id_dev, id_algo, bruteforce_time):

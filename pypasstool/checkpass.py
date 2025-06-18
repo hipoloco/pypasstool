@@ -142,11 +142,14 @@ def process_bruteforce_entry(db_conn, passinfo, pwd_props_id, bruteforce_device,
         pwd_props_id (int): ID de las propiedades de la contraseña.
         bruteforce_device (dict): Diccionario con info del dispositivo seleccionado.
         device_hashrate (dict): Diccionario con info del hash seleccionado.
+    
+    Returns:
+        float: Tiempo estimado en segundos para romper la contraseña.
     """
-    insert_password_bruteforce(db_conn, pwd_props_id, bruteforce_device["id_dev"], device_hashrate["id_algo"])
+    
     num_passwords = calc_password_combinations(passinfo)
     pass_breaktime = calc_bruteforce_time(num_passwords, device_hashrate["device_hashrate"])
-    update_bruteforce_time(db_conn, pwd_props_id, bruteforce_device["id_dev"], device_hashrate["id_algo"], pass_breaktime)
+    insert_password_bruteforce(db_conn, pwd_props_id, bruteforce_device["id_dev"], device_hashrate["id_algo"], pass_breaktime)
     return pass_breaktime
 
 def calc_password_combinations(passinfo):
