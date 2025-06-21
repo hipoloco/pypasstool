@@ -100,7 +100,6 @@ def create_tables(db_conn):
 
 
 if __name__ == "__main__":
-    password_db.create_table()
     print("Tabla 'passwords' creada correctamente.") 
 
 # Bloque para prevenir la ejecución directa del módulo.
