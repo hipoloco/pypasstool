@@ -45,13 +45,13 @@ def select_hash_algorithm(db_conn):
     hash_algo = get_hash_algo(db_conn)
     
     print("Seleccione alguna de las siguientes opciones de hasheo:")
-    for opt, (id_algo, algo_name, custom_algo) in enumerate(hash_algo, 1):
+    for opt, (id_algo, algo_name) in enumerate(hash_algo, 1):
         print(f"{opt}. {algo_name}")
 
     option = input("\nOpción seleccionada: ")
     if option.isdigit() and 1 <= int(option) <= len(hash_algo):
-        id_algo, algo_name, custom_algo = hash_algo[int(option) - 1]
-        return {"id_algo": id_algo, "algo_name": algo_name, "custom_algo": custom_algo}
+        id_algo, algo_name = hash_algo[int(option) - 1]
+        return {"id_algo": id_algo, "algo_name": algo_name}
     else:
         getpass("\nOpción ino válida, presione ENTER para continuar.")
         return None
@@ -140,8 +140,6 @@ def hashpass(db_conn):
             if not password_hash:
                 password_hash = hash_password(password, hash["algo_name"])
                 insert_password_hash(db_conn, pwd_id, hash["id_algo"], password_hash)
-
-            
 
         print("\nEl hash para la contraseña ingresada es: ", end=""); cprint(password_hash, "G")
 

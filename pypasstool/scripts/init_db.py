@@ -35,7 +35,6 @@ def create_tables(db_conn):
         CREATE TABLE IF NOT EXISTS hash_algorithms (
             id_algo INTEGER NOT NULL,
             algo_name TEXT NOT NULL,
-            custom_algo BOOLEAN NOT NULL,
             PRIMARY KEY(id_algo AUTOINCREMENT) CONSTRAINT pk_hashalgo,
             UNIQUE(algo_name) CONSTRAINT uk_hashalgo_name
         )

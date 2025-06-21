@@ -3,7 +3,7 @@ import sqlite3
 def get_hash_algo(db_conn):
    
     cursor = db_conn.cursor()
-    cursor.execute("SELECT id_algo, algo_name, custom_algo FROM hash_algorithms ORDER BY algo_name")
+    cursor.execute("SELECT id_algo, algo_name FROM hash_algorithms ORDER BY algo_name")
     return cursor.fetchall()
 
 def find_password_id(db_conn, hashed_password):

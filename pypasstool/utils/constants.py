@@ -42,6 +42,8 @@ DEVICES = {
     }
 }
 
+CUSTOM_HASH_ALGORITHMS = ["HASHTEO"]
+
 # Límites en segundos para clasificar la seguridad de una contraseña (ruptura por fuerza bruta)
 # Categorías:
 # - 0 a 1 segundo: Extremadamente débil

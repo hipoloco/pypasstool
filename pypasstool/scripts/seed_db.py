@@ -1,7 +1,7 @@
 import os, sys
 import sqlite3
 
-from utils.constants import DEVICES
+from utils.constants import DEVICES, CUSTOM_HASH_ALGORITHMS
 from utils.utils import cprint
 
 def seed_db(db_conn):
@@ -44,11 +44,13 @@ def seed_hash_algorithms(db_conn):
     algo_names = set()
     for device in DEVICES.values():
         algo_names.update(device.get("hashrates", {}).keys())
+    # Agregar algoritmos personalizados
+    algo_names.update(CUSTOM_HASH_ALGORITHMS)
     # Insertar cada algoritmo en la tabla hash_algorithms
     for algo in algo_names:
         cursor.execute(
-            "INSERT OR IGNORE INTO hash_algorithms (algo_name, custom_algo) VALUES (?, ?)",
-            (algo, False)
+            "INSERT OR IGNORE INTO hash_algorithms (algo_name) VALUES (?)",
+            (algo,)
         )
 
 def seed_device_hashrates(db_conn):
