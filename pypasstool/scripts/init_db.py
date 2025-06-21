@@ -3,7 +3,6 @@ import os, sys
 
 from utils.constants import DATABASE_NAME
 from utils.utils import cprint
-from models import password_db
 
 def create_db(db_path=DATABASE_NAME):
     try:

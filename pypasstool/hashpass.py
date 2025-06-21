@@ -12,17 +12,18 @@ from getpass import getpass
 
 from utils import passutils
 from utils.utils import show_header, cprint, handle_program_exit, handle_task_stop
-from models import password_db
+from models.hashpass import find_password_id, get_hash_algo, find_password_hash, insert_password_hash, insert_password
 
+"""
 def select_hash_algorithm():
-    """
+    
     Muestra las opciones de algoritmos de hashing disponibles y solicita al usuario
     seleccionar uno de ellos.
 
     Returns:
         None | str: Opción seleccionada por el usuario ("1", "2", "3" o "4"),
                     o None si la entrada no es válida.
-    """
+    
     print("Seleccione alguna de las siguientes opciones de hasheo:")
     print("1) MD5")
     print("2) SHA-1")
@@ -36,6 +37,25 @@ def select_hash_algorithm():
         return None
     
     return option
+
+"""
+
+def select_hash_algorithm(db_conn):
+    
+    hash_algo = get_hash_algo(db_conn)
+    
+    print("Seleccione alguna de las siguientes opciones de hasheo:")
+    for opt, (id_algo, algo_name, custom_algo) in enumerate(hash_algo, 1):
+        print(f"{opt}. {algo_name}")
+
+    option = input("\nOpción seleccionada: ")
+    if option.isdigit() and 1 <= int(option) <= len(hash_algo):
+        id_algo, algo_name, custom_algo = hash_algo[int(option) - 1]
+        return {"id_algo": id_algo, "algo_name": algo_name, "custom_algo": custom_algo}
+    else:
+        getpass("\nOpción ino válida, presione ENTER para continuar.")
+        return None
+
 
 def hashteo(password):
     """
@@ -77,27 +97,18 @@ def hashteo(password):
     # Cada valor del array (0-255) se transforma en un string de dos dígitos hexadecimales.
     return ''.join(f'{x:02x}' for x in hash_array)
 
-def hash_password(password, option):
-    """
-    Genera el hash de la contraseña utilizando el algoritmo seleccionado.
-
-    Args:
-        password (str): Contraseña a hashear.
-        option (str): Opción seleccionada ("1", "2", "3" o "4").
-
-    Returns:
-        str | bytes: Hash generado. Devuelve bytes si se usa bcrypt.
-    """
-    if option == "1":
+def hash_password(password, hash):
+    
+    if hash == "MD5":
         return hashlib.md5(password.encode()).hexdigest()
-    if option == "2":
+    if hash == "SHA-1":
         return hashlib.sha1(password.encode()).hexdigest()
-    if option == "3":
+    if hash == "BCRYPT":
         return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    if option == "4":
+    if hash == "HASHTEO":
         return hashteo(password)
 
-def hashpass():
+def hashpass(db_conn):
     """
     Punto de entrada principal para la funcionalidad de hasheo de contraseñas.
 
@@ -112,12 +123,25 @@ def hashpass():
             show_header("=== OPCIÓN 3: HASHEAR CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
             password = passutils.input_password()
         
-        option = None
-        while option == None:
+        hash = None
+    
+        while hash == None:
             show_header("=== OPCIÓN 3: HASHEAR CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
-            option = select_hash_algorithm()
+            hash = select_hash_algorithm(db_conn)
+        
+        hashedpwd = generate_hash(password)
+        pwd_id = find_password_id(db_conn, hashedpwd)
+        if not pwd_id:
+            pwd_id = insert_password(db_conn, hashedpwd)
+            password_hash = hash_password(password, hash["algo_name"])
+            insert_password_hash(db_conn, pwd_id, hash["id_algo"], password_hash)
+        else:
+            password_hash = find_password_hash(db_conn, pwd_id, hash["id_algo"])
+            if not password_hash:
+                password_hash = hash_password(password, hash["algo_name"])
+                insert_password_hash(db_conn, pwd_id, hash["id_algo"], password_hash)
 
-        password_hash = hash_password(password, option)
+            
 
         print("\nEl hash para la contraseña ingresada es: ", end=""); cprint(password_hash, "G")
 
@@ -133,15 +157,10 @@ def generate_hash(password):
     salt = password [:: -1]
     data = password + salt
     hash_object = hashlib.sha1(data.encode())
-    hash_hex = hash_object.hexadigest()
-
-    if password_db.hash_exists(hash_hex):
-        print("Hash ya existente en la base de datos.")
-    else:
-        print("Nuevo hash calculado, guardando hash en la base de datos.")
-        password_db.save_hash(hash_hex)
+    hash_hex = hash_object.hexdigest()
 
     return hash_hex
+
 # Bloque para prevenir la ejecución directa del módulo.
 if __name__ == "__main__":
     cprint("\n[*] Este módulo no puede ser ejecutado directamente.\n", "R")
