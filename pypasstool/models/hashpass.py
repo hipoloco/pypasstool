@@ -15,7 +15,7 @@ def find_password_id(db_conn, hashed_password):
         WHERE hashedpwd = ?
         LIMIT 1
     """, (
-        hashed_password
+        hashed_password,
     ))
 
     row = cursor.fetchone()
@@ -49,26 +49,11 @@ def insert_password(db_conn, hashedpwd):
     cursor.execute("""
         INSERT INTO passwords (hashedpwd)
         VALUES (?)
-    """, (hashedpwd))
+    """, (hashedpwd,))
     db_conn.commit()
     return cursor.lastrowid
 
 
-def hash_exists(hash_hex):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT id FROM passwords WHERE hash = ?", (hash_hex,))
-    result = cur.fetchone()
-    conn.close()
-    return result is not None
-
-
-def save_hash(hash_hex):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("INSERT INTO passwords (hash) VALUES (?)", (hash_hex,))
-    conn.commit()
-    conn.close()
 
 
     
