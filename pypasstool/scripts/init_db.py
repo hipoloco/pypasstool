@@ -3,6 +3,7 @@ import os, sys
 
 from utils.constants import DATABASE_NAME
 from utils.utils import cprint
+from models import password_db
 
 def create_db(db_path=DATABASE_NAME):
     try:
@@ -98,6 +99,11 @@ def create_tables(db_conn):
     ''')
 
     db_conn.commit()
+
+
+if __name__ == "__main__":
+    password_db.create_table()
+    print("Tabla 'passwords' creada correctamente.") 
 
 # Bloque para prevenir la ejecución directa del módulo.
 if __name__ == "__main__":

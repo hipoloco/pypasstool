@@ -12,6 +12,7 @@ from getpass import getpass
 
 from utils import passutils
 from utils.utils import show_header, cprint, handle_program_exit, handle_task_stop
+from models import password_db
 
 def select_hash_algorithm():
     """
@@ -128,6 +129,19 @@ def hashpass():
     except KeyboardInterrupt:
         handle_task_stop()
 
+def generate_hash(password):
+    salt = password [:: -1]
+    data = password + salt
+    hash_object = hashlib.sha1(data.encode())
+    hash_hex = hash_object.hexadigest()
+
+    if password_db.hash_exists(hash_hex):
+        print("Hash ya existente en la base de datos.")
+    else:
+        print("Nuevo hash calculado, guardando hash en la base de datos.")
+        password_db.save_hash(hash_hex)
+
+    return hash_hex
 # Bloque para prevenir la ejecución directa del módulo.
 if __name__ == "__main__":
     cprint("\n[*] Este módulo no puede ser ejecutado directamente.\n", "R")
