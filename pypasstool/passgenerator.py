@@ -8,12 +8,13 @@ símbolos.
 """
 
 import time
+import sqlite3
 from getpass import getpass
-
+from models.passgenerator import find_password, insert_password
 from utils import passutils
 from utils.utils import cprint, handle_task_stop, handle_program_exit, show_header
 
-def password_generator(length, charset_list):
+def password_generator(length, charset_list,db_conn):
     """
     Genera una contraseña basada en el largo especificado y los conjuntos de caracteres seleccionados.
 
@@ -38,9 +39,15 @@ def password_generator(length, charset_list):
 
     # Verificar que la contraseña cumpla con los requisitos de todos los conjuntos de caracteres
     if all(any(char in charset for char in password) for charset in charset_list):
-        return password
+        hashedpass= passutils.generate_hash(password)
+        if find_password(db_conn,hashedpass):
+            return password_generator(length,charset_list,db_conn)
+        else:
+            insert_password(db_conn, hashedpass)
+            return password
     else:
         return password_generator(length, charset_list)  # Intentar nuevamente
+
 
 def set_password_length():
     """
@@ -77,7 +84,7 @@ def ask_yes_no(question):
         return None
     return answer.lower() == 's'
 
-def passgenerator():
+def passgenerator(db_conn):
     """
     Punto de entrada principal para el generador de contraseñas.
 
@@ -166,7 +173,7 @@ def passgenerator():
         selected_charsets = [charset for charset in all_charsets if charset is not None]
 
         # Generar contraseña
-        password = password_generator(passinfo.length, selected_charsets)
+        password = password_generator(passinfo.length, selected_charsets,db_conn)
 
         # Mostrar el resultado
         show_header("=== OPCIÓN 2: GENERADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")

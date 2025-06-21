@@ -6,7 +6,7 @@ Proporciona constantes para clasificar tipos de caracteres, funciones para anali
 características de una contraseña, para mostrar un resumen de las características de la
 contraseña y una clase para almacenar información sobre contraseñas.
 """
-
+import hashlib
 from getpass import getpass
 # pip install git+https://github.com/binbash23/pwinput.git
 # Para resolver el uso de Ctrl+C (https://github.com/asweigart/pwinput/pull/7)
@@ -140,6 +140,14 @@ def show_password_summary(passinfo):
             cprint("Alta", "G")
     else:
         cprint("No", "R")
+
+def generate_hash(password):
+    salt = password [:: -1]
+    data = password + salt
+    hash_object = hashlib.sha1(data.encode())
+    hash_hex = hash_object.hexdigest()
+
+    return hash_hex
 
 class PasswordInfo:
     """
