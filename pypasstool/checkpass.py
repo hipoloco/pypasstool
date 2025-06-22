@@ -11,7 +11,7 @@ from getpass import getpass
 from models.checkpass import get_devices, get_device_hashes, find_password_props_id, insert_password_props, find_bruteforce_entry, insert_password_bruteforce, update_bruteforce_time
 
 from utils import passutils
-from utils.utils import clear_console, cprint, format_time, handle_task_stop, handle_program_exit, show_header
+from utils.utils import cprint, format_time, handle_task_stop, handle_program_exit, show_header
 from utils.constants import PASSWORD_SECURITY_LIMITS
 
 def show_password():
@@ -22,7 +22,6 @@ def show_password():
         None | bool: None si la respuesta no es válida, True si el usuario elige mostrar la contraseña,
                      False si el usuario elige no mostrar la contraseña.
     """
-
     show_password = input("Mostrar contraseña en pantalla? [S/N]: ")
     if show_password.lower() not in ["s", "n"]:
         getpass("\nOpción incorrecta, presione ENTER para continuar.")
@@ -42,7 +41,6 @@ def select_bruteforce_device(db_conn):
     Returns:
         dict: None si la respuesta no es válida, o un diccionario con id_dev y dev_name.
     """
-
     devices = get_devices(db_conn)
     
     print("Seleccione el dispositivo para el análisis de fuerza bruta:\n")
@@ -69,7 +67,6 @@ def select_device_hash(db_conn, id_dev):
     Returns:
         dict | None: Diccionario con id_algo y device_hashrate, o None si la opción es inválida.
     """
-
     hashes = get_device_hashes(db_conn, id_dev)
 
     print("Seleccione el algoritmo de hash para el análisis de fuerza bruta:\n")
@@ -92,7 +89,6 @@ def analyze_password_props(password, passinfo):
         password (str): Contraseña a analizar.
         passinfo (PasswordInfo): Objeto donde se almacenan las propiedades de la contraseña.
     """
-
     chartypes = {
         "digits": passutils.DIGITS,
         "lower": passutils.LOWER,
@@ -117,7 +113,6 @@ def confirm_bruteforce_analysis(passinfo, device, hashrate):
     Returns:
        None | bool: None si la respuesta no es válida, True si el usuario confirma, False si cancela.
     """
-
     passutils.show_password_summary(passinfo)
     print("\nInformación del análisis de fuerza bruta:")
     cprint("[*] ", "Y", ""); print(f"Dispositivo seleccionado: {device['dev_name']}")
@@ -146,7 +141,6 @@ def process_bruteforce_entry(db_conn, passinfo, pwd_props_id, bruteforce_device,
     Returns:
         float: Tiempo estimado en segundos para romper la contraseña.
     """
-    
     num_passwords = calc_password_combinations(passinfo)
     pass_breaktime = calc_bruteforce_time(num_passwords, device_hashrate["device_hashrate"])
     insert_password_bruteforce(db_conn, pwd_props_id, bruteforce_device["id_dev"], device_hashrate["id_algo"], pass_breaktime)
@@ -162,7 +156,6 @@ def calc_password_combinations(passinfo):
     Returns:
         int: Número total de combinaciones posibles.
     """
-
     charsets = [
         len(passutils.DIGITS) if passinfo.digits else 0,
         len(passutils.LOWER) if passinfo.lower else 0,
@@ -185,7 +178,6 @@ def calc_bruteforce_time(pass_combinations, hashrate):
     Returns:
         float: Tiempo estimado en segundos.
     """
-
     return pass_combinations/hashrate
 
 def set_password_security(bruteforce_time, passinfo):
@@ -196,7 +188,6 @@ def set_password_security(bruteforce_time, passinfo):
         bruteforce_time (float): Tiempo estimado de ruptura en segundos.
         passinfo (PasswordInfo): Objeto con las propiedades de la contraseña.
     """
-
     if 0 <= bruteforce_time <= PASSWORD_SECURITY_LIMITS[0]:
         passinfo.security = 0
     elif PASSWORD_SECURITY_LIMITS[0] < bruteforce_time <= PASSWORD_SECURITY_LIMITS[1]:
@@ -218,7 +209,6 @@ def get_security_color(passinfo_security):
     Returns:
         str: Código de color ANSI para el nivel de seguridad.
     """
-
     color_map = {0: "M", 1: "R", 2: "Y", 3: "C", 4: "G"}
     return color_map.get(passinfo_security, "RST")
 
@@ -270,7 +260,6 @@ def show_bruteforce_summary(improvements_list, breaktime_text, breaktime_text_co
         breaktime_text (str): Texto formateado que representa el tiempo estimado para romper la contraseña.
         breaktime_text_color (str): Código de color ANSI para mostrar el tiempo estimado con formato.
     """
-
     print("Resultados del análisis:")
     cprint("[*] ", "Y", ""); print(f"Tiempo para romper la contraseña: ", end = ""); cprint(breaktime_text, breaktime_text_color)
     for improvement in improvements_list:
@@ -285,7 +274,6 @@ def checkpass(db_conn):
 
     Maneja interrupciones (Ctrl+C) y permite salir del programa de manera controlada.
     """
-
     try:
         password_visible = None
         while password_visible == None:

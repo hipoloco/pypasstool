@@ -8,24 +8,24 @@ símbolos.
 """
 
 import time
-import sqlite3
 from getpass import getpass
-from models.passgenerator import find_password, insert_password
+from models.passgenerator import find_password
+from models.common import insert_password
 from utils import passutils
 from utils.utils import cprint, handle_task_stop, handle_program_exit, show_header
 
-def password_generator(length, charset_list,db_conn):
+def password_generator(db_conn, length, charset_list):
     """
     Genera una contraseña basada en el largo especificado y los conjuntos de caracteres seleccionados.
 
     Args:
+        db_conn: Conexión a la base de datos.
         length (int): Largo de la contraseña a generar.
         charset_list (list[list[str]]): Lista de conjuntos de caracteres permitidos.
 
     Returns:
         str: Contraseña generada que cumple con los requisitos.
     """
-
     # Crear un único string con todos los caracteres permitidos
     allchars = ''.join(''.join(charset) for charset in charset_list)
 
@@ -39,15 +39,14 @@ def password_generator(length, charset_list,db_conn):
 
     # Verificar que la contraseña cumpla con los requisitos de todos los conjuntos de caracteres
     if all(any(char in charset for char in password) for charset in charset_list):
-        hashedpass= passutils.hash_password(password)
-        if find_password(db_conn,hashedpass):
-            return password_generator(length,charset_list,db_conn)
+        hashedpass = passutils.hash_password(password)
+        if find_password(db_conn, hashedpass):
+            return password_generator(db_conn, length, charset_list)
         else:
             insert_password(db_conn, hashedpass)
             return password
     else:
-        return password_generator(length, charset_list)  # Intentar nuevamente
-
+        return password_generator(db_conn, length, charset_list)  # Intentar nuevamente
 
 def set_password_length():
     """
@@ -173,7 +172,7 @@ def passgenerator(db_conn):
         selected_charsets = [charset for charset in all_charsets if charset is not None]
 
         # Generar contraseña
-        password = password_generator(passinfo.length, selected_charsets,db_conn)
+        password = password_generator(db_conn, passinfo.length, selected_charsets)
 
         # Mostrar el resultado
         show_header("=== OPCIÓN 2: GENERADOR DE CONTRASEÑAS (CTRL+C PARA VOLVER) ===\n")
