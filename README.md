@@ -90,7 +90,7 @@ python pypasstool\main.py
 - **`pypasstool/checkpass.py`**: Módulo para analizar la seguridad de contraseñas.
 - **`pypasstool/passgenerator.py`**: Módulo para generar contraseñas seguras.
 - **`pypasstool/hashpass.py`**: Módulo para hashear contraseñas.
-- **`pypastool/models/init_db.py y seed_db.py`: Scripts para inicializar y poblar la base de datos.
+- **`pypastool/models/init_db.py y seed_db.py`**: Scripts para inicializar y poblar la base de datos.
 
 ### Scripts de Instalación
 - **`install_dependencies.sh`** (Linux/MacOS): Script para instalar las dependencias desde `requirements.txt`.
