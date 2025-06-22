@@ -1,3 +1,9 @@
+"""
+init_db.py
+
+Este módulo se encarga de crear la base de datos SQLite y las tablas necesarias para la aplicación.
+"""
+
 import sqlite3
 import os, sys
 
@@ -5,6 +11,18 @@ from utils.constants import DATABASE_NAME
 from utils.utils import cprint
 
 def create_db(db_path=DATABASE_NAME):
+    """
+    Crea la base de datos SQLite y las tablas necesarias si no existen.
+
+    Args:
+        db_path (str): Ruta del archivo de base de datos. Por defecto es "pypasstool.db".
+
+    Returns:
+        sqlite3.Connection: Objeto de conexión a la base de datos.
+
+    Raises:
+        sqlite3.Error: Si ocurre un error al crear la base de datos o las tablas.
+    """
     try:
         db_conn = sqlite3.connect(db_path)
         create_tables(db_conn)
@@ -21,6 +39,12 @@ def create_db(db_path=DATABASE_NAME):
     return db_conn
 
 def create_tables(db_conn):
+    """
+    Crea las tablas necesarias en la base de datos.
+
+    Args:
+        db_conn (sqlite3.Connection): Objeto de conexión a la base de datos.
+    """
     cursor = db_conn.cursor()
 
     cursor.execute('''
@@ -97,10 +121,6 @@ def create_tables(db_conn):
     ''')
 
     db_conn.commit()
-
-
-if __name__ == "__main__":
-    print("Tabla 'passwords' creada correctamente.") 
 
 # Bloque para prevenir la ejecución directa del módulo.
 if __name__ == "__main__":
