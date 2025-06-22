@@ -1,6 +1,10 @@
-import sqlite3
+"""
+checkpass.py
 
-from utils.passutils import PasswordInfo
+Este módulo contiene funciones para interactuar con la base de datos SQLite
+relacionadas con el análisis de contraseñas.
+"""
+import sqlite3
 
 def get_devices(db_conn):
     """
@@ -130,8 +134,8 @@ def find_bruteforce_entry(db_conn, id_pwdprop, id_dev, id_algo):
 
 def insert_password_bruteforce(db_conn, id_pwdprop, id_dev, id_algo, bruteforce_time):
     """
-    Inserta en la tabla password_bruteforce una combinación específica de id_pwdprop, id_dev e id_algo
-    con bruteforce_time en 0.
+    Inserta en la tabla password_bruteforce una combinación específica de id_pwdprop,
+    id_dev, id_algo y bruteforce_time.
 
     Args:
         db_conn: Conexión a la base de datos.
