@@ -6,6 +6,7 @@ Proporciona constantes para clasificar tipos de caracteres, funciones para anali
 características de una contraseña, para mostrar un resumen de las características de la
 contraseña y una clase para almacenar información sobre contraseñas.
 """
+
 import hashlib
 from getpass import getpass
 # pip install git+https://github.com/binbash23/pwinput.git
@@ -77,7 +78,6 @@ def input_password(show_password = False):
     Returns:
         None | str: None si la contraseña no es válida, contraseña si es válida y confirmada.
     """
-
     if show_password == False:
         password = pwinput("Ingrese la contraseña: ", "*")
     else:
@@ -106,7 +106,6 @@ def validate_password(password):
     Returns:
         str | None: Mensaje de error si la contraseña no es válida, None si es válida.
     """
-
     if not password:
         return "No ha ingresado una contraseña,"
     if " " in password:
@@ -122,7 +121,6 @@ def show_password_summary(passinfo):
     Args:
         passinfo (PasswordInfo): Objeto con las propiedades de la contraseña.
     """
-
     print("Resumen de la contraseña:")
     cprint("[*] ", "Y", ""); print("Longitud: ", end=""); cprint(str(passinfo.length), "R") if passinfo.length <= 10 else cprint(str(passinfo.length), "G")
     cprint("[*] ", "Y", ""); print("Tiene números: ", end=""); cprint("Si", "G") if passinfo.digits else cprint("No", "R")
@@ -141,13 +139,22 @@ def show_password_summary(passinfo):
     else:
         cprint("No", "R")
 
-def generate_hash(password):
-    salt = password [:: -1]
-    data = password + salt
-    hash_object = hashlib.sha1(data.encode())
-    hash_hex = hash_object.hexdigest()
+def hash_password(password):
+    """
+    Hashea la contraseña utilizando SHA-1 con un salt invertido.
 
-    return hash_hex
+    Args:
+        password (str): Contraseña a hashear.
+
+    Returns:
+        str: Contraseña hasheada.
+    """
+    salt = password[:: -1]
+    data = password + salt
+    hashed_pwd_object = hashlib.sha1(data.encode())
+    hashed_pwd = hashed_pwd_object.hexdigest()
+
+    return hashed_pwd
 
 class PasswordInfo:
     """

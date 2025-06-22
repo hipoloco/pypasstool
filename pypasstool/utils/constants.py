@@ -42,6 +42,7 @@ DEVICES = {
     }
 }
 
+# Array de hashes personalizados
 CUSTOM_HASH_ALGORITHMS = ["HASHTEO"]
 
 # Límites en segundos para clasificar la seguridad de una contraseña (ruptura por fuerza bruta)

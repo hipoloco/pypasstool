@@ -39,7 +39,7 @@ def password_generator(length, charset_list,db_conn):
 
     # Verificar que la contraseña cumpla con los requisitos de todos los conjuntos de caracteres
     if all(any(char in charset for char in password) for charset in charset_list):
-        hashedpass= passutils.generate_hash(password)
+        hashedpass= passutils.hash_password(password)
         if find_password(db_conn,hashedpass):
             return password_generator(length,charset_list,db_conn)
         else:

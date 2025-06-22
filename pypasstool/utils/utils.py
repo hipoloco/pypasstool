@@ -56,7 +56,6 @@ def cprint(text, color, end="\n"):
         color (str): La clave del color en el diccionario `ANSI_COLORS` (ej. "R" para rojo).
         end (str, opcional): El carácter que se imprime al final. Por defecto es un salto de línea.
     """
-    
     # Usar el color por defecto si no se encuentra el color solicitado
     color = ANSI_COLORS.get(color, ANSI_COLORS.get("RST"))
     print(f"{color}{text}{ANSI_COLORS['RST']}", end=end)
@@ -75,7 +74,6 @@ def format_time(seconds):
     Returns:
         str: Representación legible de la duración en tiempo.
     """
-
     # Definición de las conversiones en segundos
     SECOND = 1
     MINUTE = 60 * SECOND
@@ -135,7 +133,6 @@ def show_header(message):
     Args:
         message (str): Mensaje a mostrar en el encabezado.
     """
-
     clear_console()
     cprint(message, "Y")
 
